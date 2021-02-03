@@ -5,4 +5,6 @@
     <string name="search_pokemons">Search Pokemons</string>
     <string name="pokemon_image_description">Pokemon Image</string>
     <string name="retry">Retry</string>
+    <string name="pokemons_tab">Pokemons</string>
+    <string name="favorites_tab">Favorites</string>
 </resources>

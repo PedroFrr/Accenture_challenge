@@ -50,8 +50,10 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
     private fun initAdapter() {
         binding.pokemonRecyclerView.apply {
             adapter = pokemonListAdapter
-            adapter = pokemonListAdapter.withLoadStateFooter(footer = PokemonsLoadStateAdapter { pokemonListAdapter.retry() })
-            setHasFixedSize(true)
+            adapter = pokemonListAdapter.withLoadStateHeaderAndFooter(
+                header = PokemonsLoadStateAdapter { pokemonListAdapter.retry() },
+                footer = PokemonsLoadStateAdapter { pokemonListAdapter.retry() })
+            hasFixedSize()
         }
 
 
@@ -60,12 +62,12 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
         binding.pokemonRecyclerView.addItemDecoration(decoration)
 
         pokemonListAdapter.addLoadStateListener { loadState ->
-            // Only show the list if refresh succeeds.
-            binding.pokemonRecyclerView.isVisible = loadState.refresh  is LoadState.NotLoading
+            //TODO revisit some ticks on app
+
             // Show loading spinner during initial load or refresh.
-            binding.progressBar.isVisible = loadState.refresh is LoadState.Loading
+            binding.progressBar.isVisible = loadState.source.refresh is LoadState.Loading
             // Show the retry state if initial load or refresh fails.
-            binding.retryButton.isVisible = loadState.refresh is LoadState.Error
+            binding.retryButton.isVisible = loadState.source.refresh is LoadState.Error
 
 
         }

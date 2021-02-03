@@ -25,8 +25,6 @@ class PokemonListPagingDataAdapter:  PagingDataAdapter<DbPokemon, PokemonListPag
         private val binding: ListItemPokemonBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        //TODO remove this should be done on the APIMapper
-        private val regex = "(\\d+)(?!.*\\d)".toRegex()
 
         companion object {
             fun from(parent: ViewGroup): PokemonViewHolder {
@@ -42,8 +40,7 @@ class PokemonListPagingDataAdapter:  PagingDataAdapter<DbPokemon, PokemonListPag
             with(binding) {
                 pokemonName.text = item.name
 
-                val pokemonId = regex.find(item.url)?.value ?: ""
-                pokemonImage.loadImage("$POKEMON_IMAGE_BASE_URL$pokemonId.png", R.drawable.ic_baseline_emoji_emotions_24)
+                pokemonImage.loadImage(item.url, R.drawable.ic_baseline_emoji_emotions_24)
             }
 
         }

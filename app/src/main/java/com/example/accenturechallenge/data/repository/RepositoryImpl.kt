@@ -33,7 +33,7 @@ class RepositoryImpl @Inject constructor(
         return Pager(
             config = PagingConfig(
                 pageSize = POKEMON_PAGE_SIZE,
-                enablePlaceholders = false
+                enablePlaceholders = true
             ),
             remoteMediator = PokemonRemoteMediator(
                 pokemonService,

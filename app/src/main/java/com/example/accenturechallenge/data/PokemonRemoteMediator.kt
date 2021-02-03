@@ -24,37 +24,33 @@ class PokemonRemoteMediator(
     private val apiMapper: ApiMapper
 ) : RemoteMediator<Int, DbPokemon>() {
 
-    override suspend fun load(loadType: LoadType, state: PagingState<Int, DbPokemon>): MediatorResult {
-        val page = when(loadType){
+    override suspend fun load(
+        loadType: LoadType,
+        state: PagingState<Int, DbPokemon>
+    ): MediatorResult {
+        val page = when (loadType) {
             LoadType.REFRESH -> {
                 val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
-                remoteKeys?.nextKey?.minus(1) ?: POKEMON_API_STARTING_INDEX
+                remoteKeys?.nextKey?.minus(POKEMON_PAGE_SIZE) ?: POKEMON_API_STARTING_INDEX
             }
             LoadType.PREPEND -> {
-                val remoteKeys = getRemoteKeyForFirstItem(state)
-                if (remoteKeys == null) {
-                    throw InvalidObjectException("Remote key and the prevKey should not be null")
-                }
-                val prevKey = remoteKeys.prevKey
-                if (prevKey == null) {
-                    return MediatorResult.Success(endOfPaginationReached = false)
-                }
-                remoteKeys.prevKey
+                return MediatorResult.Success(true)
             }
+
             LoadType.APPEND -> {
-                val remoteKeys = getRemoteKeyForLastItem(state)
-                if (remoteKeys?.nextKey == null) {
-                    throw InvalidObjectException("Remote key should not be null for $loadType")
-                }
-                remoteKeys.nextKey
+                val remoteKeys = getRemoteKeyForLastItem(state) ?: throw InvalidObjectException("Result is empty")
+                remoteKeys.nextKey ?: return MediatorResult.Success(true)
             }
         }
 
 
         try {
-            val apiResponse = pokemonService.fetchPokemons(offset = page?.let{it}, itemsPerPage =  state.config.pageSize)
+            val apiResponse = pokemonService.fetchPokemons(
+                offset = page?.let { it },
+                itemsPerPage = state.config.pageSize
+            )
 
-            val pokemons = apiResponse.pokemonResults.map {  apiMapper.mapApiPokemonToModel(it)}
+            val pokemons = apiResponse.pokemonResults.map { apiMapper.mapApiPokemonToModel(it) }
             val endOfPaginationReached = apiResponse.next == null
             database.withTransaction {
                 // clear all tables in the database
@@ -62,7 +58,8 @@ class PokemonRemoteMediator(
                     database.remoteKeysDao().clearRemoteKeys()
                     database.pokemonDao().clearAllPokemons()
                 }
-                val prevKey = if (page == POKEMON_API_STARTING_INDEX) null else page - POKEMON_PAGE_SIZE
+                val prevKey =
+                    if (page == POKEMON_API_STARTING_INDEX) null else page - POKEMON_PAGE_SIZE
                 val nextKey = if (endOfPaginationReached) null else page + POKEMON_PAGE_SIZE
                 val keys = pokemons.map {
                     DbRemoteKeys(id = it.id, prevKey = prevKey, nextKey = nextKey)
@@ -109,7 +106,6 @@ class PokemonRemoteMediator(
             }
         }
     }
-
 
 
 }

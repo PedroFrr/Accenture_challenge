@@ -19,4 +19,9 @@
         android:name="com.example.accenturechallenge.ui.pokemons.detail.PokemonDetailFragment"
         android:label="fragment_pokemon_detail"
         tools:layout="@layout/fragment_pokemon_detail" />
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.example.accenturechallenge.ui.pokemons.favorites.FavoritesFragment"
+        android:label="fragment_favorites"
+        tools:layout="@layout/fragment_favorites" />
 </navigation>
