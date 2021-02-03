@@ -1,9 +1,21 @@
 package com.example.accenturechallenge.utils
 
+import android.content.Context
 import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.accenturechallenge.R
+
+fun Fragment.toast(message: String, length: Int = Toast.LENGTH_SHORT) {
+    view?.let { activity?.toast(message, length) }
+}
+
+fun Context.toast(message: String, length: Int = Toast.LENGTH_SHORT) {
+    Toast.makeText(this, message, length).show()
+}
+
 
 /**
  * Helper functions for the View layer of the app.

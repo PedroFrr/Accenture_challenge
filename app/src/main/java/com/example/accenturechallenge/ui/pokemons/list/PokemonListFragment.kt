@@ -2,16 +2,20 @@ package com.example.accenturechallenge.ui.pokemons.list
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.accenturechallenge.R
 import com.example.accenturechallenge.databinding.FragmentPokemonListBinding
+import com.example.accenturechallenge.utils.toast
 import com.example.accenturechallenge.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 /** [Fragment] class to represent cat breed list.
@@ -24,35 +28,60 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
     private val pokemonListViewModel: PokemonListViewModel by viewModels()
     private val pokemonListAdapter by lazy { PokemonListPagingDataAdapter() }
 
+    private var searchJob: Job? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         fetchPokemons()
-
         initUi()
+
+
     }
 
-    private fun initUi(){
+    private fun initUi() {
+
+//        binding.retryButton.setOnClickListener { pokemonListAdapter.retry() }
 
         initAdapter()
+
     }
 
-    private fun initAdapter(){
+    private fun initAdapter() {
         binding.pokemonRecyclerView.apply {
             adapter = pokemonListAdapter
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-            hasFixedSize()
+            adapter = pokemonListAdapter.withLoadStateFooter(footer = PokemonsLoadStateAdapter { pokemonListAdapter.retry() })
+            setHasFixedSize(true)
         }
+
+
+        // add dividers between RecyclerView's row items
+        val decoration = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        binding.pokemonRecyclerView.addItemDecoration(decoration)
+
+        pokemonListAdapter.addLoadStateListener { loadState ->
+            // Only show the list if refresh succeeds.
+            binding.pokemonRecyclerView.isVisible = loadState.refresh  is LoadState.NotLoading
+            // Show loading spinner during initial load or refresh.
+            binding.progressBar.isVisible = loadState.refresh is LoadState.Loading
+            // Show the retry state if initial load or refresh fails.
+            binding.retryButton.isVisible = loadState.refresh is LoadState.Error
+
+
+        }
+
     }
 
     private fun fetchPokemons() {
-        lifecycleScope.launch {
-            pokemonListViewModel.fetchPokemons().collectLatest { pagingData ->
-                pokemonListAdapter.submitData(pagingData)
-            }
+        // Make sure we cancel the previous job before creating a new one
+        searchJob?.cancel()
+        searchJob = lifecycleScope.launch {
+            pokemonListViewModel.fetchPokemons().distinctUntilChanged()
+                .collectLatest { pagingData ->
+                    pokemonListAdapter.submitData(pagingData)
+                }
         }
+
     }
 
 

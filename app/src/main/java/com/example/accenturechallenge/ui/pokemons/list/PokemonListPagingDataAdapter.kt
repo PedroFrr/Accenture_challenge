@@ -5,10 +5,13 @@ import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.accenturechallenge.data.network.response.PokemonResult
+import com.example.accenturechallenge.R
+import com.example.accenturechallenge.data.database.entities.DbPokemon
 import com.example.accenturechallenge.databinding.ListItemPokemonBinding
+import com.example.accenturechallenge.utils.POKEMON_IMAGE_BASE_URL
+import com.example.accenturechallenge.utils.loadImage
 
-class PokemonListPagingDataAdapter:  PagingDataAdapter<PokemonResult, PokemonListPagingDataAdapter.PokemonViewHolder>(PokemonListDiffCallBack()) {
+class PokemonListPagingDataAdapter:  PagingDataAdapter<DbPokemon, PokemonListPagingDataAdapter.PokemonViewHolder>(PokemonListDiffCallBack()) {
 
     override fun onBindViewHolder(holder: PokemonViewHolder, position: Int) {
         getItem(position)?.let { holder.bind(it) }
@@ -21,6 +24,10 @@ class PokemonListPagingDataAdapter:  PagingDataAdapter<PokemonResult, PokemonLis
     class PokemonViewHolder private constructor(
         private val binding: ListItemPokemonBinding
     ) : RecyclerView.ViewHolder(binding.root) {
+
+        //TODO remove this should be done on the APIMapper
+        private val regex = "(\\d+)(?!.*\\d)".toRegex()
+
         companion object {
             fun from(parent: ViewGroup): PokemonViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
@@ -31,9 +38,12 @@ class PokemonListPagingDataAdapter:  PagingDataAdapter<PokemonResult, PokemonLis
             }
         }
 
-        fun bind(item: PokemonResult) {
+        fun bind(item: DbPokemon) {
             with(binding) {
-                pokemoName.text = item.name
+                pokemonName.text = item.name
+
+                val pokemonId = regex.find(item.url)?.value ?: ""
+                pokemonImage.loadImage("$POKEMON_IMAGE_BASE_URL$pokemonId.png", R.drawable.ic_baseline_emoji_emotions_24)
             }
 
         }
@@ -41,10 +51,10 @@ class PokemonListPagingDataAdapter:  PagingDataAdapter<PokemonResult, PokemonLis
     }
 }
 
-private class PokemonListDiffCallBack : DiffUtil.ItemCallback<PokemonResult>() {
-    override fun areContentsTheSame(oldItem: PokemonResult, newItem: PokemonResult): Boolean =
+private class PokemonListDiffCallBack : DiffUtil.ItemCallback<DbPokemon>() {
+    override fun areContentsTheSame(oldItem: DbPokemon, newItem: DbPokemon): Boolean =
         oldItem.name == newItem.name
 
-    override fun areItemsTheSame(oldItem: PokemonResult, newItem: PokemonResult): Boolean =
+    override fun areItemsTheSame(oldItem: DbPokemon, newItem: DbPokemon): Boolean =
         oldItem == newItem
 }

@@ -1,11 +1,11 @@
 package com.example.accenturechallenge.data.network.mapper
 
 import com.example.accenturechallenge.data.database.entities.DbPokemon
-import com.example.accenturechallenge.data.network.response.PokemonResponse
+import com.example.accenturechallenge.data.network.response.PokemonResult
 
 
 interface ApiMapper {
 
-    fun mapApiPokemonToModel(apiPokemon: PokemonResponse): DbPokemon
+    fun mapApiPokemonToModel(apiPokemon: PokemonResult): DbPokemon
 
 }

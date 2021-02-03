@@ -5,15 +5,18 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.accenturechallenge.data.database.dao.PokemonDao
+import com.example.accenturechallenge.data.database.dao.RemoteKeysDao
 import com.example.accenturechallenge.data.database.entities.DbPokemon
+import com.example.accenturechallenge.data.database.entities.DbRemoteKeys
 import com.example.accenturechallenge.utils.DATABASE_NAME
 
 /**
  * SQLite Database for storing the Pokemon API results
  */
-@Database(entities = [DbPokemon::class], version = 1, exportSchema = false)
+@Database(entities = [DbPokemon::class, DbRemoteKeys::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun pokemonDao(): PokemonDao
+    abstract fun remoteKeysDao(): RemoteKeysDao
 
     companion object {
 

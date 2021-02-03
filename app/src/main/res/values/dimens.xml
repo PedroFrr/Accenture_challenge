@@ -2,4 +2,12 @@
 <resources>
     <dimen name="dimen_0dp">0dp</dimen>
     <dimen name="dimen_8dp">8dp</dimen>
+    <dimen name="padding_half">8dp</dimen>
+    <dimen name="padding_standard">16dp</dimen>
+    <dimen name="card_elevation">3dp</dimen>
+    <dimen name="card_corner_radius">8dp</dimen>
+    <dimen name="card_image_size">150dp</dimen>
+    <dimen name="pokemon_list_item_size">150dp</dimen>
+    <dimen name="pokemon_name_text_size">24sp</dimen>
+    <dimen name="error_text_size">24sp</dimen>
 </resources>

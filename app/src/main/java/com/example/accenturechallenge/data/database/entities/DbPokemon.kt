@@ -6,5 +6,7 @@ import java.util.*
 
 @Entity(tableName = "pokemon")
 data class DbPokemon(
-    @PrimaryKey val id: String = UUID.randomUUID().toString()
+    @PrimaryKey val id: String = UUID.randomUUID().toString(),
+    val url: String,
+    val name: String
 )
