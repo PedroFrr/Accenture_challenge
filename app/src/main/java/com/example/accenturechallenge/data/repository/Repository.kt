@@ -8,5 +8,7 @@ interface Repository {
 
     fun fetchPokemons(): Flow<PagingData<DbPokemon>>
 
+    suspend fun fetchFavoritePokemons(): List<DbPokemon>
+
     suspend fun favoritePokemon(pokemonId: String)
 }

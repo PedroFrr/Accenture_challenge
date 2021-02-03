@@ -15,7 +15,6 @@ import com.example.accenturechallenge.utils.POKEMON_PAGE_SIZE
 import retrofit2.HttpException
 import java.io.IOException
 import java.io.InvalidObjectException
-import kotlin.math.absoluteValue
 
 @ExperimentalPagingApi
 class PokemonRemoteMediator(

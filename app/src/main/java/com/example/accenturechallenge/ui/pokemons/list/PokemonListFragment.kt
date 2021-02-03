@@ -8,15 +8,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.accenturechallenge.R
-import com.example.accenturechallenge.data.database.entities.DbPokemon
 import com.example.accenturechallenge.databinding.FragmentPokemonListBinding
-import com.example.accenturechallenge.utils.toast
 import com.example.accenturechallenge.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 /** [Fragment] class to represent cat breed list.
@@ -57,10 +55,6 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
             hasFixedSize()
         }
 
-
-        // add dividers between RecyclerView's row items
-        val decoration = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-        binding.pokemonRecyclerView.addItemDecoration(decoration)
 
         pokemonListAdapter.addLoadStateListener { loadState ->
             //TODO revisit some ticks on app

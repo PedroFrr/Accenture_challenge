@@ -19,17 +19,11 @@ class RepositoryImpl @Inject constructor(
     private val apiMapper: ApiMapper
 ) : Repository {
 
+    /**
+     * RemoteMediator which keeps a local database cache in the case the user has no internet connection
+     */
     @ExperimentalPagingApi
     override fun fetchPokemons(): Flow<PagingData<DbPokemon>> {
-        //TODO delete the below
-        /**
-         * Paging source if there's a need to rollback
-         */
-//        return Pager(
-//            config = PagingConfig(pageSize = POKEMON_PAGE_SIZE, enablePlaceholders = false),
-//            pagingSourceFactory = { PokemonPagingSource(pokemonService) }
-//        ).flow
-
         return Pager(
             config = PagingConfig(
                 pageSize = POKEMON_PAGE_SIZE,
@@ -40,14 +34,17 @@ class RepositoryImpl @Inject constructor(
                 database,
                 apiMapper
             ),
-            pagingSourceFactory = { database.pokemonDao().fetchAllPokemons()}
+            pagingSourceFactory = { database.pokemonDao().fetchAllPokemons() }
 
         ).flow
 
 
     }
 
-    override suspend fun favoritePokemon(pokemonId: String) = database.pokemonDao().favoritePokemon(pokemonId)
+    override suspend fun fetchFavoritePokemons(): List<DbPokemon> = database.pokemonDao().fetchFavoritePokemons()
+
+    override suspend fun favoritePokemon(pokemonId: String) =
+        database.pokemonDao().favoritePokemon(pokemonId)
 
 
 }

@@ -1,24 +1,22 @@
-package com.example.accenturechallenge.ui.pokemons.list
+package com.example.accenturechallenge.ui.pokemons.favorites
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.accenturechallenge.R
 import com.example.accenturechallenge.data.database.entities.DbPokemon
 import com.example.accenturechallenge.databinding.ListItemPokemonBinding
 import com.example.accenturechallenge.utils.loadImage
 
-class PokemonListPagingDataAdapter(
-    private val favoritePokemon: (pokemonId: String) -> Unit
-) : PagingDataAdapter<DbPokemon, PokemonListPagingDataAdapter.PokemonViewHolder>(
+class FavoritesAdapter : ListAdapter<DbPokemon, FavoritesAdapter.PokemonViewHolder>(
     PokemonListDiffCallBack()
 ) {
 
     override fun onBindViewHolder(holder: PokemonViewHolder, position: Int) {
         getItem(position)?.let {
-            holder.bind(it, favoritePokemon)
+            holder.bind(it)
         }
     }
 
@@ -42,8 +40,7 @@ class PokemonListPagingDataAdapter(
         }
 
         fun bind(
-            item: DbPokemon,
-            favoritePokemon: (pokemonId: String) -> Unit
+            item: DbPokemon
         ) {
             with(binding) {
                 pokemonName.text = item.name
@@ -53,9 +50,6 @@ class PokemonListPagingDataAdapter(
                 isFavourite.setImageResource(favoriteDrawable)
                 pokemonImage.loadImage(item.url, R.drawable.ic_baseline_emoji_emotions_24)
 
-                isFavourite.setOnClickListener {
-                    favoritePokemon(item.id)
-                }
             }
 
         }
