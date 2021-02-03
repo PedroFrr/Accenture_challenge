@@ -41,8 +41,8 @@ android {
 
 dependencies {
 
-    kapt "com.google.dagger:hilt-android-compiler:$rootProject.hiltVersion"
-    kapt "androidx.hilt:hilt-compiler:$rootProject.hiltViewModelVersion"
+//    kapt "com.google.dagger:hilt-android-compiler:$rootProject.hiltVersion"
+//    kapt "androidx.hilt:hilt-compiler:$rootProject.hiltViewModelVersion"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$rootProject.moshiVersion"
     kapt "androidx.room:room-compiler:$rootProject.roomVersion"
 
@@ -71,7 +71,7 @@ dependencies {
 
     //Hilt
     implementation "com.google.dagger:hilt-android:$rootProject.hiltVersion"
-    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$rootProject.hiltViewModelVersion"
+    kapt "com.google.dagger:hilt-android-compiler:$rootProject.hiltVersion"
 
 
     //Retrofit
