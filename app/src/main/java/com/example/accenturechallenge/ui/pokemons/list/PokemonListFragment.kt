@@ -10,6 +10,7 @@ import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.accenturechallenge.R
+import com.example.accenturechallenge.data.database.entities.DbPokemon
 import com.example.accenturechallenge.databinding.FragmentPokemonListBinding
 import com.example.accenturechallenge.utils.toast
 import com.example.accenturechallenge.utils.viewBinding
@@ -26,7 +27,7 @@ import kotlinx.coroutines.launch
 class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
     private val binding by viewBinding(FragmentPokemonListBinding::bind)
     private val pokemonListViewModel: PokemonListViewModel by viewModels()
-    private val pokemonListAdapter by lazy { PokemonListPagingDataAdapter() }
+    private val pokemonListAdapter by lazy { PokemonListPagingDataAdapter(::favoritePokemon) }
 
     private var searchJob: Job? = null
 
@@ -41,7 +42,7 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
 
     private fun initUi() {
 
-//        binding.retryButton.setOnClickListener { pokemonListAdapter.retry() }
+        binding.retryButton.setOnClickListener { pokemonListAdapter.retry() }
 
         initAdapter()
 
@@ -65,7 +66,7 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
             //TODO revisit some ticks on app
 
             // Show loading spinner during initial load or refresh.
-            binding.progressBar.isVisible = loadState.source.refresh is LoadState.Loading
+            binding.progressBar.isVisible = loadState.refresh is LoadState.Loading
             // Show the retry state if initial load or refresh fails.
             binding.retryButton.isVisible = loadState.source.refresh is LoadState.Error
 
@@ -75,7 +76,7 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
     }
 
     private fun fetchPokemons() {
-        //TODO only makes sense if I endup with search otherwise delete
+        //TODO job declaration only makes sense if I endup with search otherwise delete
 
         // Make sure we cancel the previous job before creating a new one
         searchJob?.cancel()
@@ -86,6 +87,10 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
                 }
         }
 
+    }
+
+    private fun favoritePokemon(pokemonId: String){
+        pokemonListViewModel.favoritePokemon(pokemonId)
     }
 
 

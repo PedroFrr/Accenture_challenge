@@ -56,7 +56,7 @@ class PokemonRemoteMediator(
                 // clear all tables in the database
                 if (loadType == LoadType.REFRESH) {
                     database.remoteKeysDao().clearRemoteKeys()
-                    database.pokemonDao().clearAllPokemons()
+//                    database.pokemonDao().clearAllPokemons()
                 }
                 val prevKey =
                     if (page == POKEMON_API_STARTING_INDEX) null else page - POKEMON_PAGE_SIZE

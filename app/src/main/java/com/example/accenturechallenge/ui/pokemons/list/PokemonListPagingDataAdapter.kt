@@ -11,10 +11,16 @@ import com.example.accenturechallenge.databinding.ListItemPokemonBinding
 import com.example.accenturechallenge.utils.POKEMON_IMAGE_BASE_URL
 import com.example.accenturechallenge.utils.loadImage
 
-class PokemonListPagingDataAdapter:  PagingDataAdapter<DbPokemon, PokemonListPagingDataAdapter.PokemonViewHolder>(PokemonListDiffCallBack()) {
+class PokemonListPagingDataAdapter(
+    private val favoritePokemon: (pokemonId: String) -> Unit
+) : PagingDataAdapter<DbPokemon, PokemonListPagingDataAdapter.PokemonViewHolder>(
+    PokemonListDiffCallBack()
+) {
 
     override fun onBindViewHolder(holder: PokemonViewHolder, position: Int) {
-        getItem(position)?.let { holder.bind(it) }
+        getItem(position)?.let {
+            holder.bind(it, favoritePokemon)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonViewHolder {
@@ -36,11 +42,21 @@ class PokemonListPagingDataAdapter:  PagingDataAdapter<DbPokemon, PokemonListPag
             }
         }
 
-        fun bind(item: DbPokemon) {
+        fun bind(
+            item: DbPokemon,
+            favoritePokemon: (pokemonId: String) -> Unit
+        ) {
             with(binding) {
                 pokemonName.text = item.name
-
+                //Sets favorite icon based on its condition
+                val favoriteDrawable =
+                    if (item.isFavorite) R.drawable.ic_baseline_favorite_24 else R.drawable.ic_baseline_favorite_border_24
+                isFavourite.setImageResource(favoriteDrawable)
                 pokemonImage.loadImage(item.url, R.drawable.ic_baseline_emoji_emotions_24)
+
+                isFavourite.setOnClickListener {
+                    favoritePokemon(item.id)
+                }
             }
 
         }

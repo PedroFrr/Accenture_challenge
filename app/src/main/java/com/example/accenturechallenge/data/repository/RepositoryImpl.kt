@@ -47,5 +47,7 @@ class RepositoryImpl @Inject constructor(
 
     }
 
+    override suspend fun favoritePokemon(pokemonId: String) = database.pokemonDao().favoritePokemon(pokemonId)
+
 
 }

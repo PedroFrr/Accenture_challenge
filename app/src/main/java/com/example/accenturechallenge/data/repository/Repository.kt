@@ -7,4 +7,6 @@ import kotlinx.coroutines.flow.Flow
 interface Repository {
 
     fun fetchPokemons(): Flow<PagingData<DbPokemon>>
+
+    suspend fun favoritePokemon(pokemonId: String)
 }

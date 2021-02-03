@@ -15,7 +15,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!--    TODO add content description-->
+        <ImageView
+            android:id="@+id/isFavourite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:layout_margin="@dimen/padding_standard"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/favorite_pokemon_content_description"
+            tools:src="@drawable/ic_baseline_favorite_border_24" />
+
         <ImageView
             android:id="@+id/pokemonImage"
             android:layout_width="match_parent"
