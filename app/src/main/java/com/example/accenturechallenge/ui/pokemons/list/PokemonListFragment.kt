@@ -73,6 +73,8 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
     }
 
     private fun fetchPokemons() {
+        //TODO only makes sense if I endup with search otherwise delete
+
         // Make sure we cancel the previous job before creating a new one
         searchJob?.cancel()
         searchJob = lifecycleScope.launch {
