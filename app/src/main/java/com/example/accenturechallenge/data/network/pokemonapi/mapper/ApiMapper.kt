@@ -1,7 +1,7 @@
-package com.example.accenturechallenge.data.network.mapper
+package com.example.accenturechallenge.data.network.pokemonapi.mapper
 
 import com.example.accenturechallenge.data.database.entities.DbPokemon
-import com.example.accenturechallenge.data.network.response.PokemonResult
+import com.example.accenturechallenge.data.network.pokemonapi.response.PokemonResult
 
 
 interface ApiMapper {

@@ -20,9 +20,9 @@ class PokemonListViewModel @Inject constructor(
         return repository.fetchPokemons().cachedIn(viewModelScope)
     }
 
-    fun favoritePokemon(pokemonId: String){
+    fun favoritePokemon(pokemon: DbPokemon){
         viewModelScope.launch {
-            repository.favoritePokemon(pokemonId)
+            repository.favoritePokemon(pokemon)
         }
     }
 

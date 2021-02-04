@@ -1,4 +1,4 @@
-package com.example.accenturechallenge.data.network.response
+package com.example.accenturechallenge.data.network.pokemonapi.response
 
 
 import com.squareup.moshi.Json

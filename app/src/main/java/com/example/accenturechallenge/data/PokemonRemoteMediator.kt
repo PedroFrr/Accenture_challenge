@@ -8,8 +8,8 @@ import androidx.room.withTransaction
 import com.example.accenturechallenge.data.database.AppDatabase
 import com.example.accenturechallenge.data.database.entities.DbPokemon
 import com.example.accenturechallenge.data.database.entities.DbRemoteKeys
-import com.example.accenturechallenge.data.network.PokemonService
-import com.example.accenturechallenge.data.network.mapper.ApiMapper
+import com.example.accenturechallenge.data.network.pokemonapi.PokemonService
+import com.example.accenturechallenge.data.network.pokemonapi.mapper.ApiMapper
 import com.example.accenturechallenge.utils.POKEMON_API_STARTING_INDEX
 import com.example.accenturechallenge.utils.POKEMON_PAGE_SIZE
 import retrofit2.HttpException

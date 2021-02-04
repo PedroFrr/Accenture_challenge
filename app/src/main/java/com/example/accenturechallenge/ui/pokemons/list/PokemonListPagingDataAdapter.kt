@@ -11,7 +11,7 @@ import com.example.accenturechallenge.databinding.ListItemPokemonBinding
 import com.example.accenturechallenge.utils.loadImage
 
 class PokemonListPagingDataAdapter(
-    private val favoritePokemon: (pokemonId: String) -> Unit
+    private val favoritePokemon: (pokemon: DbPokemon) -> Unit
 ) : PagingDataAdapter<DbPokemon, PokemonListPagingDataAdapter.PokemonViewHolder>(
     PokemonListDiffCallBack()
 ) {
@@ -43,7 +43,7 @@ class PokemonListPagingDataAdapter(
 
         fun bind(
             item: DbPokemon,
-            favoritePokemon: (pokemonId: String) -> Unit
+            favoritePokemon: (pokemon: DbPokemon) -> Unit
         ) {
             with(binding) {
                 pokemonName.text = item.name
@@ -54,7 +54,7 @@ class PokemonListPagingDataAdapter(
                 pokemonImage.loadImage(item.url, R.drawable.ic_baseline_emoji_emotions_24)
 
                 isFavourite.setOnClickListener {
-                    favoritePokemon(item.id)
+                    favoritePokemon(item)
                 }
             }
 

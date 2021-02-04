@@ -1,7 +1,7 @@
 package com.example.accenturechallenge.di
 
-import com.example.accenturechallenge.data.network.mapper.ApiMapper
-import com.example.accenturechallenge.data.network.mapper.ApiMapperImpl
+import com.example.accenturechallenge.data.network.pokemonapi.mapper.ApiMapper
+import com.example.accenturechallenge.data.network.pokemonapi.mapper.ApiMapperImpl
 import com.example.accenturechallenge.data.repository.Repository
 import com.example.accenturechallenge.data.repository.RepositoryImpl
 import dagger.Binds

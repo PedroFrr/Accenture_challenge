@@ -10,5 +10,5 @@ interface Repository {
 
     suspend fun fetchFavoritePokemons(): List<DbPokemon>
 
-    suspend fun favoritePokemon(pokemonId: String)
+    suspend fun favoritePokemon(pokemon: DbPokemon)
 }

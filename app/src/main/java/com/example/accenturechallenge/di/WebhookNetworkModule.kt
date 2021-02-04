@@ -20,15 +20,21 @@ import javax.inject.Singleton
  */
 @Module
 @InstallIn(SingletonComponent::class)
-object NetworkingModule {
+object WebhookNetworkModule {
 
     @Provides
     @Singleton
-    fun provideClient(): OkHttpClient =
-        OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            })
+    @Named("retrofit_webhook")
+    fun buildWebhookRetrofit(client: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+            .client(client)
+            .baseUrl(WEBHOOK_URL)
+            .addConverterFactory(MoshiConverterFactory.create().asLenient())
             .build()
+    }
+
+    @Provides
+    fun provideWebhookService(@Named("retrofit_webhook") retrofit: Retrofit): WebhookService =
+        retrofit.create(WebhookService::class.java)
 
 }

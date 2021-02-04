@@ -7,8 +7,10 @@ import androidx.paging.PagingData
 import com.example.accenturechallenge.data.PokemonRemoteMediator
 import com.example.accenturechallenge.data.database.AppDatabase
 import com.example.accenturechallenge.data.database.entities.DbPokemon
-import com.example.accenturechallenge.data.network.PokemonService
-import com.example.accenturechallenge.data.network.mapper.ApiMapper
+import com.example.accenturechallenge.data.network.pokemonapi.PokemonService
+import com.example.accenturechallenge.data.network.pokemonapi.mapper.ApiMapper
+import com.example.accenturechallenge.data.network.webhook.WebhookService
+import com.example.accenturechallenge.data.network.webhook.request.FavoritePokemonRequest
 import com.example.accenturechallenge.utils.POKEMON_PAGE_SIZE
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -16,7 +18,8 @@ import javax.inject.Inject
 class RepositoryImpl @Inject constructor(
     private val pokemonService: PokemonService,
     private val database: AppDatabase,
-    private val apiMapper: ApiMapper
+    private val apiMapper: ApiMapper,
+    private val webhookService: WebhookService
 ) : Repository {
 
     /**
@@ -41,10 +44,22 @@ class RepositoryImpl @Inject constructor(
 
     }
 
-    override suspend fun fetchFavoritePokemons(): List<DbPokemon> = database.pokemonDao().fetchFavoritePokemons()
+    override suspend fun fetchFavoritePokemons(): List<DbPokemon> =
+        database.pokemonDao().fetchFavoritePokemons()
 
-    override suspend fun favoritePokemon(pokemonId: String) =
-        database.pokemonDao().favoritePokemon(pokemonId)
+    override suspend fun favoritePokemon(pokemon: DbPokemon) {
+        database.pokemonDao().favoritePokemon(pokemon.id)
+
+        val request = FavoritePokemonRequest(
+            id = pokemon.id,
+            name = pokemon.name,
+            timestamp = System.currentTimeMillis(),
+            wasFavorite = pokemon.isFavorite.not()
+        )
+        webhookService.postFavorite(request)
+
+
+    }
 
 
 }

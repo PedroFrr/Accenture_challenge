@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.accenturechallenge.R
+import com.example.accenturechallenge.data.database.entities.DbPokemon
 import com.example.accenturechallenge.databinding.FragmentPokemonListBinding
 import com.example.accenturechallenge.utils.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -83,8 +84,8 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
 
     }
 
-    private fun favoritePokemon(pokemonId: String){
-        pokemonListViewModel.favoritePokemon(pokemonId)
+    private fun favoritePokemon(pokemon: DbPokemon){
+        pokemonListViewModel.favoritePokemon(pokemon)
     }
 
 
