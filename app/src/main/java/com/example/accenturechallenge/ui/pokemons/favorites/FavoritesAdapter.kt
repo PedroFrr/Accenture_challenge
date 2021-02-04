@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.accenturechallenge.R
 import com.example.accenturechallenge.data.database.entities.DbPokemon
-import com.example.accenturechallenge.data.database.entities.DbPokemonFavorites
 import com.example.accenturechallenge.databinding.ListItemPokemonBinding
 import com.example.accenturechallenge.utils.loadImage
 

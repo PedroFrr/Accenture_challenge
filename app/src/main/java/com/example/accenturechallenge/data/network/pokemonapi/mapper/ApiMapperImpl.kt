@@ -3,7 +3,6 @@ package com.example.accenturechallenge.data.network.pokemonapi.mapper
 import com.example.accenturechallenge.data.database.entities.DbPokemon
 import com.example.accenturechallenge.data.network.pokemonapi.response.PokemonResult
 import com.example.accenturechallenge.utils.POKEMON_IMAGE_BASE_URL
-import java.util.*
 import javax.inject.Inject
 
 class ApiMapperImpl @Inject constructor() : ApiMapper {

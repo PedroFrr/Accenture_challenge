@@ -2,10 +2,9 @@ package com.example.accenturechallenge.data.database.dao
 
 import androidx.paging.PagingSource
 import androidx.room.*
-import com.example.accenturechallenge.data.database.entities.DbFavorite
 import com.example.accenturechallenge.data.database.entities.DbPokemon
-import com.example.accenturechallenge.data.database.entities.DbPokemonFavorites
-import retrofit2.http.DELETE
+import com.example.accenturechallenge.data.database.entities.DbPokemonAbilityCrossRef
+import com.example.accenturechallenge.data.database.entities.DbPokemonDetailWithAbilities
 
 @Dao
 interface PokemonDao {
@@ -41,5 +40,17 @@ interface PokemonDao {
 
     @Query("SELECT * FROM pokemon WHERE id = :pokemonId LIMIT 1")
     suspend fun fetchPokemonDetail(pokemonId: String): DbPokemon
+
+    /**
+     * Many to Many queries
+     */
+    @Transaction
+    @Query("SELECT * FROM pokemon_detail WHERE pokemonDetailId = :pokemonId")
+    fun getPokemonWithAbilities(pokemonId: String): DbPokemonDetailWithAbilities
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertPokemonWithAbility(pokemonAbilityCrossRef: DbPokemonAbilityCrossRef)
+
+
 
 }

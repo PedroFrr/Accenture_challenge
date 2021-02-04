@@ -1,5 +1,6 @@
 package com.example.accenturechallenge.di
 
+import com.example.accenturechallenge.data.network.pokemonapi.PokemonClient
 import com.example.accenturechallenge.data.network.pokemonapi.PokemonService
 import com.example.accenturechallenge.utils.POKEMON_API_BASE_URL
 import dagger.Module
@@ -36,6 +37,9 @@ object PokemonApiNetworkModule {
     @Provides
     fun providePokemonService(@Named("retrofit_pokemon_api") retrofit: Retrofit): PokemonService =
         retrofit.create(PokemonService::class.java)
+
+    @Provides
+    fun providePokemonClient(pokemonService: PokemonService): PokemonClient = PokemonClient(pokemonService)
 
 
 }
