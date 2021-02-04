@@ -12,10 +12,10 @@ class ApiMapperImpl @Inject constructor() : ApiMapper {
     private val regex = "(\\d+)(?!.*\\d)".toRegex()
 
     override fun mapApiPokemonToModel(apiPokemon: PokemonResult): DbPokemon = with(apiPokemon) {
-        val pokemonId = regex.find(url)?.value  //retrieves pokemonId
+        val pokemonId = regex.find(url)?.value //retrieves pokemonId
 
         DbPokemon(
-            id = pokemonId ?: UUID.randomUUID().toString(),
+            id = pokemonId ?: "0",
             url = pokemonId.let { "$POKEMON_IMAGE_BASE_URL$pokemonId.png" } ?: "",
             name = name,
         )

@@ -51,7 +51,7 @@ class PokemonListPagingDataAdapter(
                 val favoriteDrawable =
                     if (item.isFavorite) R.drawable.ic_baseline_favorite_24 else R.drawable.ic_baseline_favorite_border_24
                 isFavourite.setImageResource(favoriteDrawable)
-                pokemonImage.loadImage(item.url, R.drawable.ic_baseline_emoji_emotions_24)
+                pokemonImage.loadImage(item.url)
 
                 isFavourite.setOnClickListener {
                     favoritePokemon(item)
