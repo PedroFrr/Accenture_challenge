@@ -1,6 +1,6 @@
 package com.example.accenturechallenge.data.network.pokemonapi
 
-import com.example.accenturechallenge.data.network.pokemonapi.response.PokemonResponse
+import com.example.accenturechallenge.data.network.pokemonapi.response.GetPokemonsResponse
 import com.example.accenturechallenge.utils.POKEMON_PAGE_SIZE
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -14,6 +14,6 @@ interface PokemonService {
     suspend fun fetchPokemons(
         @Query("offset") offset: Int = 0,
         @Query("limit") itemsPerPage: Int = POKEMON_PAGE_SIZE
-    ): PokemonResponse
+    ): GetPokemonsResponse
 
 }

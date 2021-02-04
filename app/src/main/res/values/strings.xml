@@ -8,4 +8,5 @@
     <string name="pokemons_tab">Pokemons</string>
     <string name="favorites_tab">Favorites</string>
     <string name="favorite_pokemon_content_description">Favorite Pokemon</string>
+    <string name="pokemon_detail_image_content_description">Image of the selected Pokemon</string>
 </resources>

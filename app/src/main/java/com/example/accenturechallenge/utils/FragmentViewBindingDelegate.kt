@@ -21,7 +21,8 @@ import kotlin.reflect.KProperty
 // I always use this Extension from the author above in order to use viewbinding with one single line of code. I'm assuming I can use this for the challenge
 class FragmentViewBindingDelegate<T : ViewBinding>(
     val fragment: Fragment,
-    val viewBindingFactory: (View) -> T
+    val viewBindingFactory: (View) -> T,
+    val destroyTask: ((T) -> Unit)? = null
 ) : ReadOnlyProperty<Fragment, T> {
     private var binding: T? = null
 
@@ -43,7 +44,8 @@ class FragmentViewBindingDelegate<T : ViewBinding>(
             }
 
             override fun onDestroy(owner: LifecycleOwner) {
-                fragment.viewLifecycleOwnerLiveData.removeObserver(viewLifecycleOwnerLiveDataObserver)
+                binding?.let { destroyTask?.invoke(it) }
+                binding = null
             }
         })
     }

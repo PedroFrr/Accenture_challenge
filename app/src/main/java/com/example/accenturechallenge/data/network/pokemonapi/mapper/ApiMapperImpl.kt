@@ -16,7 +16,7 @@ class ApiMapperImpl @Inject constructor() : ApiMapper {
 
         DbPokemon(
             id = pokemonId ?: "0",
-            url = pokemonId.let { "$POKEMON_IMAGE_BASE_URL$pokemonId.png" } ?: "",
+            url = pokemonId.let { "$POKEMON_IMAGE_BASE_URL$pokemonId.png" } ,
             name = name,
         )
     }

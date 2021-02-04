@@ -52,11 +52,14 @@ class PokemonRemoteMediator(
             val pokemons = apiResponse.pokemonResults.map { apiMapper.mapApiPokemonToModel(it) }
             val endOfPaginationReached = apiResponse.next == null
             database.withTransaction {
+
+                //TODO revisit. See if i can separate the data model into Pokemons and Favorites
                 // clear all tables in the database
-                if (loadType == LoadType.REFRESH) {
-                    database.remoteKeysDao().clearRemoteKeys()
-                    database.pokemonDao().clearAllPokemons()
-                }
+//                if (loadType == LoadType.REFRESH) {
+//                    database.remoteKeysDao().clearRemoteKeys()
+                    //TODO this can still be cleared, but I need to change the Favorites DataModel
+//                    database.pokemonDao().clearAllPokemons()
+//                }
                 val prevKey =
                     if (page == POKEMON_API_STARTING_INDEX) null else page - POKEMON_PAGE_SIZE
                 val nextKey = if (endOfPaginationReached) null else page + POKEMON_PAGE_SIZE

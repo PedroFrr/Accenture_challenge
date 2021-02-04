@@ -6,7 +6,9 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.accenturechallenge.data.PokemonRemoteMediator
 import com.example.accenturechallenge.data.database.AppDatabase
+import com.example.accenturechallenge.data.database.entities.DbFavorite
 import com.example.accenturechallenge.data.database.entities.DbPokemon
+import com.example.accenturechallenge.data.database.entities.DbPokemonFavorites
 import com.example.accenturechallenge.data.network.pokemonapi.PokemonService
 import com.example.accenturechallenge.data.network.pokemonapi.mapper.ApiMapper
 import com.example.accenturechallenge.data.network.webhook.WebhookService
@@ -60,6 +62,9 @@ class RepositoryImpl @Inject constructor(
 
 
     }
+
+
+    override suspend fun fetchPokemonDetail(pokemonId: String): DbPokemon = database.pokemonDao().fetchPokemonDetail(pokemonId)
 
 
 }

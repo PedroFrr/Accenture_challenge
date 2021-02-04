@@ -2,6 +2,7 @@ package com.example.accenturechallenge.ui.pokemons.list
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.Navigation
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -56,6 +57,12 @@ class PokemonListPagingDataAdapter(
                 isFavourite.setOnClickListener {
                     favoritePokemon(item)
                 }
+
+                pokemonCard.setOnClickListener {
+                    val directions = PokemonListFragmentDirections.pokemonListToDetail(item.id)
+                    Navigation.findNavController(it).navigate(directions)
+                }
+
             }
 
         }

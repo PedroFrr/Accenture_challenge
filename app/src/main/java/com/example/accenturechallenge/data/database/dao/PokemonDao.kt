@@ -1,11 +1,11 @@
 package com.example.accenturechallenge.data.database.dao
 
 import androidx.paging.PagingSource
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
+import com.example.accenturechallenge.data.database.entities.DbFavorite
 import com.example.accenturechallenge.data.database.entities.DbPokemon
+import com.example.accenturechallenge.data.database.entities.DbPokemonFavorites
+import retrofit2.http.DELETE
 
 @Dao
 interface PokemonDao {
@@ -20,10 +20,26 @@ interface PokemonDao {
     @Query("DELETE FROM pokemon")
     suspend fun clearAllPokemons()
 
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    suspend fun favoritePokemon(favorite: DbFavorite)
+
+//    @DELETE
+//    suspend fun remoteFavoritePokemon(favorite: DbFavorite)
+
+
     @Query("UPDATE pokemon SET isFavorite =  NOT isFavorite WHERE id = :pokemonId")
     suspend fun favoritePokemon(pokemonId: String)
 
+
+//    @Transaction
+//    @Query("SELECT * FROM pokemon")
+//    fun fetchFavoritePokemons(): List<DbPokemonFavorites>
+
+
     @Query("SELECT * FROM pokemon WHERE isFavorite = 1")
     suspend fun fetchFavoritePokemons(): List<DbPokemon>
+
+    @Query("SELECT * FROM pokemon WHERE id = :pokemonId LIMIT 1")
+    suspend fun fetchPokemonDetail(pokemonId: String): DbPokemon
 
 }
