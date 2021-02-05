@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph"
+    android:id="@+id/pokemonList"
     app:startDestination="@id/pokemonListFragment">
 
     <fragment
@@ -12,7 +12,8 @@
         tools:layout="@layout/fragment_pokemon_list" >
         <action
             android:id="@+id/pokemonListToDetail"
-            app:destination="@id/pokemonDetailFragment" />
+            app:destination="@id/pokemonDetailFragment"
+            app:popUpTo="@id/pokemonListFragment" />
     </fragment>
     <fragment
         android:id="@+id/pokemonDetailFragment"
@@ -23,9 +24,4 @@
             android:name="pokemonId"
             app:argType="string" />
     </fragment>
-    <fragment
-        android:id="@+id/favoritesFragment"
-        android:name="com.example.accenturechallenge.ui.pokemons.favorites.FavoritesFragment"
-        android:label="fragment_favorites"
-        tools:layout="@layout/fragment_favorites" />
 </navigation>

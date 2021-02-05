@@ -11,4 +11,6 @@
     <dimen name="pokemon_name_text_size">24sp</dimen>
     <dimen name="error_text_size">24sp</dimen>
     <dimen name="pokemon_detail_app_bar_height">300dp</dimen>
+    <dimen name="pokemon_detail_text_size">18sp</dimen>
+    <dimen name="favorite_size">54dp</dimen>
 </resources>

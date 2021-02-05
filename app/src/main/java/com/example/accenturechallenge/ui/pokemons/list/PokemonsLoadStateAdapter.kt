@@ -8,6 +8,8 @@ import androidx.paging.LoadStateAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.accenturechallenge.R
 import com.example.accenturechallenge.databinding.PokemonsLoadStateFooterViewItemBinding
+import retrofit2.HttpException
+import java.io.IOException
 
 class PokemonsLoadStateAdapter(private val retry: () -> Unit) :
     LoadStateAdapter<PokemonsLoadStateViewHolder>() {
@@ -35,7 +37,17 @@ class PokemonsLoadStateViewHolder(
 
     fun bind(loadState: LoadState) {
         if (loadState is LoadState.Error) {
-            binding.errorMsg.text = loadState.error.localizedMessage
+
+            //TODO change to string resource - needs context - if there's time
+            //Overwrites default error message
+            val errorMessage =
+                when (loadState.error) {
+                    is HttpException -> "No Connection"
+                    is IOException -> "Timeout"
+                    else -> null
+                }
+
+            binding.errorMsg.text = errorMessage
         }
         binding.progressBar.isVisible = loadState is LoadState.Loading
         binding.retryButton.isVisible = loadState !is LoadState.Loading

@@ -10,5 +10,8 @@ data class DbPokemonDetail(
     @PrimaryKey val pokemonDetailId: String = UUID.randomUUID().toString(),
     val url: String,
     val name: String,
+    val weight: String,
+    val height: String,
+    val baseExperience: String,
 
 )

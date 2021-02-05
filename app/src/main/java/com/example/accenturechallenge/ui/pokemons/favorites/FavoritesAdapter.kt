@@ -2,21 +2,23 @@ package com.example.accenturechallenge.ui.pokemons.favorites
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.accenturechallenge.R
 import com.example.accenturechallenge.data.database.entities.DbPokemon
 import com.example.accenturechallenge.databinding.ListItemPokemonBinding
+import com.example.accenturechallenge.ui.pokemons.list.PokemonListFragmentDirections
 import com.example.accenturechallenge.utils.loadImage
 
-class FavoritesAdapter : ListAdapter<DbPokemon, FavoritesAdapter.PokemonViewHolder>(
+class FavoritesAdapter(private val onFavoritePokemon: (pokemon: DbPokemon) -> Unit) : ListAdapter<DbPokemon, FavoritesAdapter.PokemonViewHolder>(
     PokemonListDiffCallBack()
 ) {
 
     override fun onBindViewHolder(holder: PokemonViewHolder, position: Int) {
         getItem(position)?.let {
-            holder.bind(it)
+            holder.bind(it, onFavoritePokemon)
         }
     }
 
@@ -40,13 +42,22 @@ class FavoritesAdapter : ListAdapter<DbPokemon, FavoritesAdapter.PokemonViewHold
         }
 
         fun bind(
-            item: DbPokemon
+            item: DbPokemon,
+            onFavoritePokemon: (pokemon: DbPokemon) -> Unit
         ) {
             with(binding) {
                 pokemonName.text = item.name
                 //Here all the Pokemons are favorite
                 isFavourite.setImageResource(R.drawable.ic_baseline_favorite_24)
+                isFavourite.setOnClickListener {
+                    onFavoritePokemon(item)
+                }
                 pokemonImage.loadImage(item.url)
+
+                pokemonCard.setOnClickListener {
+                    val directions = FavoritesFragmentDirections.favoriteListoDetail(item.id)
+                    Navigation.findNavController(it).navigate(directions)
+                }
 
             }
 

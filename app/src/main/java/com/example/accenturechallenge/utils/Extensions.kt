@@ -1,14 +1,19 @@
 package com.example.accenturechallenge.utils
 
 import android.content.Context
+import android.content.Intent
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.LiveData
+import androidx.navigation.NavController
 import com.bumptech.glide.Glide
 import com.example.accenturechallenge.R
 import com.facebook.shimmer.Shimmer
 import com.facebook.shimmer.ShimmerDrawable
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 fun Fragment.toast(message: String, length: Int = Toast.LENGTH_SHORT) {
     view?.let { activity?.toast(message, length) }

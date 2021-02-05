@@ -49,8 +49,7 @@ class PokemonListPagingDataAdapter(
             with(binding) {
                 pokemonName.text = item.name
                 //Sets favorite icon based on its condition
-                val favoriteDrawable =
-                    if (item.isFavorite) R.drawable.ic_baseline_favorite_24 else R.drawable.ic_baseline_favorite_border_24
+                val favoriteDrawable = if (item.isFavorite) R.drawable.ic_baseline_favorite_24 else R.drawable.ic_baseline_favorite_border_24
                 isFavourite.setImageResource(favoriteDrawable)
                 pokemonImage.loadImage(item.url)
 

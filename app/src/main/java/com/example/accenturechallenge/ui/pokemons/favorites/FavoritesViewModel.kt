@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.accenturechallenge.data.database.entities.DbPokemon
 import com.example.accenturechallenge.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,9 +23,16 @@ class FavoritesViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val favorites = repository.fetchFavoritePokemons()
-            _favoritePokemons.postValue(favorites)
-        }
+                .collect {
+                    _favoritePokemons.postValue(it)
+                }
 
+        }
     }
 
+    fun favoritePokemon(pokemon: DbPokemon) {
+        viewModelScope.launch {
+            repository.favoritePokemon(pokemon)
+        }
+    }
 }

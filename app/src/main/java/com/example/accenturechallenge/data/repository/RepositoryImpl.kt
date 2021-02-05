@@ -4,12 +4,11 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.example.accenturechallenge.data.Failure
-import com.example.accenturechallenge.data.PokemonRemoteMediator
-import com.example.accenturechallenge.data.Result
-import com.example.accenturechallenge.data.Success
+import com.example.accenturechallenge.data.*
 import com.example.accenturechallenge.data.database.AppDatabase
 import com.example.accenturechallenge.data.database.entities.DbPokemon
+import com.example.accenturechallenge.data.database.entities.DbPokemonAbility
+import com.example.accenturechallenge.data.database.entities.DbPokemonDetailWithAbilities
 import com.example.accenturechallenge.data.network.pokemonapi.PokemonClient
 import com.example.accenturechallenge.data.network.pokemonapi.mapper.ApiMapper
 import com.example.accenturechallenge.data.network.pokemonapi.response.GetPokemonItemResult
@@ -17,6 +16,7 @@ import com.example.accenturechallenge.data.network.webhook.WebhookService
 import com.example.accenturechallenge.data.network.webhook.request.FavoritePokemonRequest
 import com.example.accenturechallenge.utils.POKEMON_PAGE_SIZE
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(
@@ -48,7 +48,7 @@ class RepositoryImpl @Inject constructor(
 
     }
 
-    override suspend fun fetchFavoritePokemons(): List<DbPokemon> =
+    override fun fetchFavoritePokemons(): Flow<List<DbPokemon>> =
         database.pokemonDao().fetchFavoritePokemons()
 
     override suspend fun favoritePokemon(pokemon: DbPokemon) {
@@ -65,7 +65,7 @@ class RepositoryImpl @Inject constructor(
 
     }
 
-        //TODO revist
+    //TODO revist
 //    override suspend fun fetchPokemonDetail(pokemonId: String): DbPokemonDetailWithAbilities {
 //        val result = pokemonClient.fetchPokemonDetail(pokemonId)
 //
@@ -97,20 +97,23 @@ class RepositoryImpl @Inject constructor(
 //    database.pokemonDao().getPokemonWithAbilities(pokemonId)
 //        }
 
-    //TODO for now I'm fetching directly from the API see aboce for another solution by first saving to DB
-    override suspend fun fetchPokemonDetail(pokemonId: String): Result<GetPokemonItemResult>{
+    //TODO for now I'm fetching directly from the API see above for another solution by first saving to DB
+    override suspend fun fetchPokemonDetail(pokemonId: String): Flow<Result<GetPokemonItemResult>> {
 
-        val result = pokemonClient.fetchPokemonDetail(pokemonId)
+        return flow {
+            emit(Loading)
 
-        return if (result is Failure) {
-            Failure(result.error)
-        }else{
-            val pokemonDetail = result as Success
-            Success(pokemonDetail.data)
+            val result = pokemonClient.fetchPokemonDetail(pokemonId)
+            if (result is Failure) {
+                emit(Failure(result.error))
+            } else {
+                val pokemonDetail = result as Success
+                emit(Success(pokemonDetail.data))
+            }
         }
-
 
     }
 
+    override fun getDbPokemonDetail(pokemonId: String): Flow<DbPokemon> = database.pokemonDao().fetchPokemonDetail(pokemonId)
 
 }

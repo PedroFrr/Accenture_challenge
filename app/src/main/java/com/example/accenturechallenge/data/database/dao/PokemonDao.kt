@@ -5,6 +5,7 @@ import androidx.room.*
 import com.example.accenturechallenge.data.database.entities.DbPokemon
 import com.example.accenturechallenge.data.database.entities.DbPokemonAbilityCrossRef
 import com.example.accenturechallenge.data.database.entities.DbPokemonDetailWithAbilities
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PokemonDao {
@@ -36,10 +37,10 @@ interface PokemonDao {
 
 
     @Query("SELECT * FROM pokemon WHERE isFavorite = 1")
-    suspend fun fetchFavoritePokemons(): List<DbPokemon>
+    fun fetchFavoritePokemons(): Flow<List<DbPokemon>>
 
     @Query("SELECT * FROM pokemon WHERE id = :pokemonId LIMIT 1")
-    suspend fun fetchPokemonDetail(pokemonId: String): DbPokemon
+    fun fetchPokemonDetail(pokemonId: String): Flow<DbPokemon>
 
     /**
      * Many to Many queries
