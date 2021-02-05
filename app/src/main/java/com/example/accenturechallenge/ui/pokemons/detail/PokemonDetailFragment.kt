@@ -68,8 +68,10 @@ class PokemonDetailFragment : Fragment() {
             when (result) {
 
                 is Success -> {
-                    binding.progressBar.gone()
+                    binding.pokemonDetailAppBar.appbar.visible()
                     binding.pokemonContent.visible()
+                    binding.progressBar.gone()
+                    binding.errorMessage.gone()
 
                     val pokemonDetail = result.data
 
@@ -92,13 +94,18 @@ class PokemonDetailFragment : Fragment() {
                         )
                     }
 
-
-
                 }
-                is Failure -> TODO()
-                Loading -> {
+                is Failure -> {
+                    binding.errorMessage.visible()
+                    binding.pokemonDetailAppBar.appbar.gone()
                     binding.pokemonContent.gone()
+                    binding.progressBar.gone()
+                }
+                Loading -> {
                     binding.progressBar.visible()
+                    binding.pokemonContent.gone()
+                    binding.errorMessage.gone()
+                    binding.pokemonDetailAppBar.appbar.gone()
                 }
             }
 
@@ -109,7 +116,8 @@ class PokemonDetailFragment : Fragment() {
          */
 
         pokemonDetailViewModel.getDbPokemon().observe(viewLifecycleOwner, { pokemon ->
-            val favoriteDrawable = if (pokemon.isFavorite) R.drawable.ic_baseline_favorite_24 else R.drawable.ic_baseline_favorite_border_24
+            val favoriteDrawable =
+                if (pokemon.isFavorite) R.drawable.ic_baseline_favorite_24 else R.drawable.ic_baseline_favorite_border_24
             binding.isFavouriteDetail.setImageResource(favoriteDrawable)
         })
 
@@ -125,25 +133,23 @@ class PokemonDetailFragment : Fragment() {
         }
     }
 
-    private fun setColorBasedOnAbility(type: String) : Int =
+    private fun setColorBasedOnAbility(type: String): Int =
 
         when (type.toLowerCase(Locale.ROOT)) {
-        "grass", "bug" -> R.color.darkTeal
-        "fire" ->  R.color.darkRed
-        "water", "fighting", "normal" -> R.color.darkBlue
-        "electric", "psychic" -> R.color.darkYellow
-        "poison", "ghost" -> R.color.darkPurple
-        "ground", "rock" ->R.color.darkBrown
-        "dark" -> R.color.darkBlack
-        else -> R.color.darkRed
-    }
+            "grass", "bug" -> R.color.darkTeal
+            "fire" -> R.color.darkRed
+            "water", "fighting", "normal" -> R.color.darkBlue
+            "electric", "psychic" -> R.color.darkYellow
+            "poison", "ghost" -> R.color.darkPurple
+            "ground", "rock" -> R.color.darkBrown
+            "dark" -> R.color.darkBlack
+            else -> R.color.darkRed
+        }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
-
 
 
 }

@@ -72,20 +72,16 @@ class PokemonListFragment : Fragment() {
 
         pokemonListAdapter.addLoadStateListener { loadState ->
 
-
             //TODO revisit some ticks on app
             if (loadState.refresh is LoadState.Loading) {
                 _binding?.progressBar?.visible()
             } else {
                 _binding?.progressBar?.gone()
 
-
             }
 
-//            // Show loading spinner during initial load or refresh.
-//            _binding?.progressBar?.isVisible = loadState.source.refresh is LoadState.Loading
             // Show the retry state if initial load or refresh fails.
-            _binding?.retryButton?.isVisible = loadState.source.refresh is LoadState.Error
+            _binding?.retryButton?.isVisible = loadState.refresh is LoadState.Error
 
 
         }

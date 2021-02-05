@@ -49,7 +49,7 @@ class PokemonRemoteMediator(
                 itemsPerPage = state.config.pageSize
             )
 
-            val pokemons = apiResponse.pokemonResults.map { apiMapper.mapApiPokemonToModel(it) }
+            val pokemons = apiResponse.resourceResults.map { apiMapper.mapApiPokemonToModel(it) }
             val endOfPaginationReached = apiResponse.next == null
             database.withTransaction {
 
@@ -67,7 +67,7 @@ class PokemonRemoteMediator(
                     DbRemoteKeys(id = it.id, prevKey = prevKey, nextKey = nextKey)
                 }
                 database.remoteKeysDao().insertAll(keys)
-                database.pokemonDao().insertAll(pokemons)
+                database.pokemonDao().insertAllPokemons(pokemons)
             }
             return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
         } catch (exception: IOException) {

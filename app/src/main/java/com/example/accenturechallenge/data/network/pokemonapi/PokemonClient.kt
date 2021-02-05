@@ -12,8 +12,21 @@ class PokemonClient @Inject constructor(
 
     suspend fun fetchPokemonDetail(pokemonId: String) = try {
         val pokemonDetail = pokemonService.fetchPokemonDetail(pokemonId)
-
         Success(pokemonDetail)
+    }catch (exception: Exception){
+        Failure(exception)
+    }
+
+    suspend fun fetchPokemonAbilities() = try {
+        val pokemonAbilities = pokemonService.fetchPokemonAbilities()
+        Success(pokemonAbilities)
+    }catch (exception: Exception){
+        Failure(exception)
+    }
+
+    suspend fun fetchPokemonTypes() = try {
+        val pokemonAbilities = pokemonService.fetchPokemonTypes()
+        Success(pokemonAbilities)
     }catch (exception: Exception){
         Failure(exception)
     }

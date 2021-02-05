@@ -2,9 +2,7 @@ package com.example.accenturechallenge.data.database.dao
 
 import androidx.paging.PagingSource
 import androidx.room.*
-import com.example.accenturechallenge.data.database.entities.DbPokemon
-import com.example.accenturechallenge.data.database.entities.DbPokemonAbilityCrossRef
-import com.example.accenturechallenge.data.database.entities.DbPokemonDetailWithAbilities
+import com.example.accenturechallenge.data.database.entities.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -12,7 +10,7 @@ interface PokemonDao {
 
     //OnConflicted is set to IGNORE as to not replace pokemons already downloaded (and possibly favorited by the user)
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertAll(doggoModel: List<DbPokemon>)
+    suspend fun insertAllPokemons(pokemons: List<DbPokemon>)
 
     @Query("SELECT * FROM pokemon")
     fun fetchAllPokemons(): PagingSource<Int, DbPokemon>
@@ -41,6 +39,17 @@ interface PokemonDao {
 
     @Query("SELECT * FROM pokemon WHERE id = :pokemonId LIMIT 1")
     fun fetchPokemonDetail(pokemonId: String): Flow<DbPokemon>
+
+
+    /**
+     * Ref Data operations
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllAbilitiesRef(abilities: List<DbPokemonAbility>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllTypesRef(abilities: List<DbPokemonType>)
+
 
     /**
      * Many to Many queries

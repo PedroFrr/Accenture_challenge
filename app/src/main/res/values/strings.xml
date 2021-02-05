@@ -12,4 +12,5 @@
     <string name="pokemon_height">Height (m):</string>
     <string name="pokemon_weight">Weight (kg):</string>
     <string name="base_experience_pokemon">Base experience:</string>
+    <string name="default_error_message">Error!! Please check your connection</string>
 </resources>

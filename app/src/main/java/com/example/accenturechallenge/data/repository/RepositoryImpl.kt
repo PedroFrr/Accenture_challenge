@@ -12,6 +12,7 @@ import com.example.accenturechallenge.data.database.entities.DbPokemonDetailWith
 import com.example.accenturechallenge.data.network.pokemonapi.PokemonClient
 import com.example.accenturechallenge.data.network.pokemonapi.mapper.ApiMapper
 import com.example.accenturechallenge.data.network.pokemonapi.response.GetPokemonItemResult
+import com.example.accenturechallenge.data.network.pokemonapi.response.GetResourceResponse
 import com.example.accenturechallenge.data.network.webhook.WebhookService
 import com.example.accenturechallenge.data.network.webhook.request.FavoritePokemonRequest
 import com.example.accenturechallenge.utils.POKEMON_PAGE_SIZE
@@ -31,6 +32,7 @@ class RepositoryImpl @Inject constructor(
      */
     @ExperimentalPagingApi
     override fun fetchPokemons(): Flow<PagingData<DbPokemon>> {
+
         return Pager(
             config = PagingConfig(
                 pageSize = POKEMON_PAGE_SIZE,
@@ -97,6 +99,23 @@ class RepositoryImpl @Inject constructor(
 //    database.pokemonDao().getPokemonWithAbilities(pokemonId)
 //        }
 
+//    //TODO this is the workign solution, right now I'm trying to set offline first with M to M relation
+//    override suspend fun fetchPokemonDetail(pokemonId: String): Flow<Result<GetPokemonItemResult>> {
+//
+//        return flow {
+//            emit(Loading)
+//
+//            val result = pokemonClient.fetchPokemonDetail(pokemonId)
+//            if (result is Failure) {
+//                emit(Failure(result.error))
+//            } else {
+//                val pokemonDetail = result as Success
+//                emit(Success(pokemonDetail.data))
+//            }
+//        }
+//
+//    }
+
     //TODO for now I'm fetching directly from the API see above for another solution by first saving to DB
     override suspend fun fetchPokemonDetail(pokemonId: String): Flow<Result<GetPokemonItemResult>> {
 
@@ -115,5 +134,9 @@ class RepositoryImpl @Inject constructor(
     }
 
     override fun getDbPokemonDetail(pokemonId: String): Flow<DbPokemon> = database.pokemonDao().fetchPokemonDetail(pokemonId)
+
+    override suspend fun fetchPokemonAbilities(): Result<GetResourceResponse> = pokemonClient.fetchPokemonAbilities()
+
+    override suspend fun fetchPokemonTypes(): Result<GetResourceResponse> = pokemonClient.fetchPokemonTypes()
 
 }
