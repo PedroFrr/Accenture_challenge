@@ -16,7 +16,6 @@ import com.example.accenturechallenge.utils.visible
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 /** [Fragment] class to represent cat breed list.
@@ -69,11 +68,10 @@ class PokemonListFragment : Fragment() {
             hasFixedSize()
         }
 
-
         pokemonListAdapter.addLoadStateListener { loadState ->
 
             //TODO revisit some ticks on app
-            if (loadState.refresh is LoadState.Loading) {
+            if (loadState.source.refresh is LoadState.Loading) {
                 _binding?.progressBar?.visible()
             } else {
                 _binding?.progressBar?.gone()

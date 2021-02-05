@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.accenturechallenge.R
 import com.example.accenturechallenge.data.database.entities.DbPokemon
 import com.example.accenturechallenge.databinding.ListItemPokemonBinding
-import com.example.accenturechallenge.ui.pokemons.list.PokemonListFragmentDirections
 import com.example.accenturechallenge.utils.loadImage
 
 class FavoritesAdapter(private val onFavoritePokemon: (pokemon: DbPokemon) -> Unit) : ListAdapter<DbPokemon, FavoritesAdapter.PokemonViewHolder>(

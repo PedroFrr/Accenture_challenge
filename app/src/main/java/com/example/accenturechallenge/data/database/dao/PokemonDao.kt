@@ -18,27 +18,17 @@ interface PokemonDao {
     @Query("DELETE FROM pokemon")
     suspend fun clearAllPokemons()
 
-//    @Insert(onConflict = OnConflictStrategy.REPLACE)
-//    suspend fun favoritePokemon(favorite: DbFavorite)
-
-//    @DELETE
-//    suspend fun remoteFavoritePokemon(favorite: DbFavorite)
-
-
     @Query("UPDATE pokemon SET isFavorite =  NOT isFavorite WHERE id = :pokemonId")
     suspend fun favoritePokemon(pokemonId: String)
-
-
-//    @Transaction
-//    @Query("SELECT * FROM pokemon")
-//    fun fetchFavoritePokemons(): List<DbPokemonFavorites>
-
 
     @Query("SELECT * FROM pokemon WHERE isFavorite = 1")
     fun fetchFavoritePokemons(): Flow<List<DbPokemon>>
 
     @Query("SELECT * FROM pokemon WHERE id = :pokemonId LIMIT 1")
     fun fetchPokemonDetail(pokemonId: String): Flow<DbPokemon>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPokemonDetail(pokemonDetail: DbPokemonDetail)
 
 
     /**
@@ -50,17 +40,18 @@ interface PokemonDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllTypesRef(abilities: List<DbPokemonType>)
 
-
     /**
-     * Many to Many queries
+     * Many to Many queries and relationships
      */
-    @Transaction
-    @Query("SELECT * FROM pokemon_detail WHERE pokemonDetailId = :pokemonId")
-    fun getPokemonWithAbilities(pokemonId: String): DbPokemonDetailWithAbilities
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertPokemonWithAbility(pokemonAbilityCrossRef: DbPokemonAbilityCrossRef)
+    suspend fun insertPokemonWithAbilities(pokemonAbilityCrossRef: List<DbPokemonAbilityCrossRef>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPokemonWithTypes(pokemonTypeCrossRef: List<DbPokemonTypeCrossRef>)
+
+    @Query("SELECT * FROM pokemon_detail WHERE pokemonDetailId = :pokemonId")
+    suspend fun getPokemonWithAbilitiesAndTypes(pokemonId: String): DbPokemonWithAbilitiesAndTypes?
 
 
 }

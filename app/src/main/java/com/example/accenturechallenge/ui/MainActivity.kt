@@ -2,8 +2,6 @@ package com.example.accenturechallenge.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
-import androidx.navigation.NavController
 import com.example.accenturechallenge.R
 import com.example.accenturechallenge.databinding.ActivityMainBinding
 import com.example.accenturechallenge.utils.setupWithNavController

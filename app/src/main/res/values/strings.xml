@@ -4,7 +4,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="search_pokemons">Search Pokemons</string>
     <string name="pokemon_image_description">Pokemon Image</string>
-    <string name="retry">Retry</string>
+    <string name="retry">Error - Retry</string>
     <string name="pokemons_tab">Pokemons</string>
     <string name="favorites_tab">Favorites</string>
     <string name="favorite_pokemon_content_description">Favorite Pokemon</string>

@@ -7,11 +7,11 @@ import androidx.paging.PagingData
 import com.example.accenturechallenge.data.*
 import com.example.accenturechallenge.data.database.AppDatabase
 import com.example.accenturechallenge.data.database.entities.DbPokemon
-import com.example.accenturechallenge.data.database.entities.DbPokemonAbility
-import com.example.accenturechallenge.data.database.entities.DbPokemonDetailWithAbilities
+import com.example.accenturechallenge.data.database.entities.DbPokemonAbilityCrossRef
+import com.example.accenturechallenge.data.database.entities.DbPokemonTypeCrossRef
+import com.example.accenturechallenge.data.database.entities.DbPokemonWithAbilitiesAndTypes
 import com.example.accenturechallenge.data.network.pokemonapi.PokemonClient
 import com.example.accenturechallenge.data.network.pokemonapi.mapper.ApiMapper
-import com.example.accenturechallenge.data.network.pokemonapi.response.GetPokemonItemResult
 import com.example.accenturechallenge.data.network.pokemonapi.response.GetResourceResponse
 import com.example.accenturechallenge.data.network.webhook.WebhookService
 import com.example.accenturechallenge.data.network.webhook.request.FavoritePokemonRequest
@@ -67,70 +67,59 @@ class RepositoryImpl @Inject constructor(
 
     }
 
-    //TODO revist
-//    override suspend fun fetchPokemonDetail(pokemonId: String): DbPokemonDetailWithAbilities {
-//        val result = pokemonClient.fetchPokemonDetail(pokemonId)
-//
-//        if (result is Failure){
-//            Failure(result.error)
-//        }else{
-//            //TODO change
-//            val pokemonDetail = result as Success
-//
-//            val dbPokemonDetail = DbPokemonDetail(
-//                pokemonDetailId = pokemonId,
-//                url = "https://pokeres.bastionbot.org/images/pokemon/180.png",
-//                name = pokemonDetail.data.name,
-//            )
-//
-//            //Map each ability from API to local DB
-//            pokemonDetail.data.abilities
-//                .map { DbPokemonAbility(name = it.ability.name) }
-//                .forEach {  }
-//            val dbAbility = DbPokemonAbility(
-//                name = .
-//            )
-//
-//            //Creates relation M to M
-//            val pokemonDetailWithAbility = DbPokemonAbilityCrossRef(
-//
-//            )
-
-//    database.pokemonDao().getPokemonWithAbilities(pokemonId)
-//        }
-
-//    //TODO this is the workign solution, right now I'm trying to set offline first with M to M relation
-//    override suspend fun fetchPokemonDetail(pokemonId: String): Flow<Result<GetPokemonItemResult>> {
-//
-//        return flow {
-//            emit(Loading)
-//
-//            val result = pokemonClient.fetchPokemonDetail(pokemonId)
-//            if (result is Failure) {
-//                emit(Failure(result.error))
-//            } else {
-//                val pokemonDetail = result as Success
-//                emit(Success(pokemonDetail.data))
-//            }
-//        }
-//
-//    }
-
-    //TODO for now I'm fetching directly from the API see above for another solution by first saving to DB
-    override suspend fun fetchPokemonDetail(pokemonId: String): Flow<Result<GetPokemonItemResult>> {
-
+    override fun fetchPokemonDetailWithAbilitiesAndTypes(pokemonId: String): Flow<Result<DbPokemonWithAbilitiesAndTypes>> {
         return flow {
             emit(Loading)
-
             val result = pokemonClient.fetchPokemonDetail(pokemonId)
+
+            //If couldn't retrieve from network, return from DB
+            //If Db is empty, return Failure to UI layer
             if (result is Failure) {
-                emit(Failure(result.error))
+                val pokemonWithAbilitiesAndTypes = database.pokemonDao().getPokemonWithAbilitiesAndTypes(pokemonId)
+                if(pokemonWithAbilitiesAndTypes != null){
+                    emit(Success(pokemonWithAbilitiesAndTypes))
+                }else{
+                    emit(Failure(result.error))
+                }
             } else {
-                val pokemonDetail = result as Success
-                emit(Success(pokemonDetail.data))
+                val pokemonResult = result as Success
+
+                val pokemonDetail = apiMapper.mapApiPokemonDetailToModel(pokemonResult.data)
+
+                /**
+                 * Transform each ability/type into a CrossRef relation between the Pokemon Detail and the abilities/Types (M to M)
+                 */
+
+                val pokemonAbilitiesCrossRef = pokemonResult.data.abilities
+                    .map { apiMapper.mapApiAbilityToPokemonAbility(it) }
+                    .map { DbPokemonAbilityCrossRef(
+                        pokemonDetailId = pokemonId,
+                        abilityId = it.abilityId,
+                    ) }
+
+                val pokemonTypesCrossRef = pokemonResult.data.types
+                    .map { apiMapper.mapApiTypeToPokemonType(it) }
+                    .map { DbPokemonTypeCrossRef(
+                        pokemonDetailId = pokemonId,
+                        typeId = it.typeId,
+                    ) }
+
+
+                //Update cache (offline first) with Pokemon Detail and respective abilities
+                //As to then query the Db for PokemonWithAbilities
+                database.pokemonDao().insertPokemonWithAbilities(pokemonAbilitiesCrossRef)
+                database.pokemonDao().insertPokemonWithTypes(pokemonTypesCrossRef)
+                database.pokemonDao().insertPokemonDetail(pokemonDetail)
+
+                val pokemonWithAbilitiesAndTypes = database.pokemonDao().getPokemonWithAbilitiesAndTypes(pokemonId)
+                if(pokemonWithAbilitiesAndTypes != null){
+                    emit(Success(pokemonWithAbilitiesAndTypes))
+                }else{
+                    emit(Failure(NullPointerException("No data")))
+                }
+
             }
         }
-
     }
 
     override fun getDbPokemonDetail(pokemonId: String): Flow<DbPokemon> = database.pokemonDao().fetchPokemonDetail(pokemonId)

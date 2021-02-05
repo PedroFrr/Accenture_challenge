@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.accenturechallenge.data.Result
 import com.example.accenturechallenge.data.database.entities.DbPokemon
-import com.example.accenturechallenge.data.network.pokemonapi.response.GetPokemonItemResult
+import com.example.accenturechallenge.data.database.entities.DbPokemonWithAbilitiesAndTypes
 import com.example.accenturechallenge.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
@@ -18,15 +18,29 @@ class PokemonDetailViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    private val _pokemonDetail = MutableLiveData<Result<GetPokemonItemResult>>()
-    fun getPokemonDetail(): LiveData<Result<GetPokemonItemResult>> = _pokemonDetail
+    //TODO working solution
+//    private val _pokemonDetail = MutableLiveData<Result<DbPokemonDetailWithAbilities>>()
+//    fun getPokemonDetail(): LiveData<Result<DbPokemonDetailWithAbilities>> = _pokemonDetail
+
+    private val _pokemonDetail = MutableLiveData<Result<DbPokemonWithAbilitiesAndTypes>>()
+    fun getPokemonDetail(): LiveData<Result<DbPokemonWithAbilitiesAndTypes>> = _pokemonDetail
 
     private val _dbPokemon = MutableLiveData<DbPokemon>()
     fun getDbPokemon(): LiveData<DbPokemon> = _dbPokemon
 
-    fun fetchPokemonDetail(pokemonId: String){
+    //TODO working solution
+//    fun fetchPokemonDetail(pokemonId: String){
+//        viewModelScope.launch {
+//            repository.fetchPokemonDetail(pokemonId)
+//                .collect {
+//                    _pokemonDetail.postValue(it)
+//                }
+//        }
+//    }
+
+        fun fetchPokemonDetail(pokemonId: String){
         viewModelScope.launch {
-            repository.fetchPokemonDetail(pokemonId)
+            repository.fetchPokemonDetailWithAbilitiesAndTypes(pokemonId)
                 .collect {
                     _pokemonDetail.postValue(it)
                 }

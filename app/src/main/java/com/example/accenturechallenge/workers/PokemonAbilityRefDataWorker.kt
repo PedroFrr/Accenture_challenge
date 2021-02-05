@@ -28,7 +28,7 @@ class PokemonAbilityRefDataWorker @AssistedInject constructor(
             Result.failure()
         }else{
             val pokemonAbilityResource = result as Success
-            val pokemonAbilities = pokemonAbilityResource.data.resourceResults.map { apiMapper.mapApiAbilityToPokemonAbility(it) }
+            val pokemonAbilities = pokemonAbilityResource.data.resourceResults.map { apiMapper.mapApiResourceAbilityToPokemonAbility(it) }
 
             database.pokemonDao().insertAllAbilitiesRef(pokemonAbilities)
 

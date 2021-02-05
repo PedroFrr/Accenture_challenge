@@ -12,14 +12,13 @@ import com.example.accenturechallenge.data.database.entities.*
 import com.example.accenturechallenge.utils.DATABASE_NAME
 import com.example.accenturechallenge.workers.PokemonAbilityRefDataWorker
 import com.example.accenturechallenge.workers.PokemonTypeRefDataWorker
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
  * SQLite Database for storing the Pokemon API results
  */
 @Database(
-    entities = [DbPokemon::class, DbRemoteKeys::class, DbPokemonDetail::class, DbPokemonAbility::class, DbPokemonAbilityCrossRef::class, DbPokemonType::class],
+    entities = [DbPokemon::class, DbRemoteKeys::class, DbPokemonDetail::class, DbPokemonAbility::class, DbPokemonAbilityCrossRef::class, DbPokemonType::class, DbPokemonTypeCrossRef::class],
     version = 1,
     exportSchema = false
 )

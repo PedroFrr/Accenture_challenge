@@ -4,8 +4,10 @@ import com.example.accenturechallenge.data.database.entities.DbPokemon
 import com.example.accenturechallenge.data.database.entities.DbPokemonAbility
 import com.example.accenturechallenge.data.database.entities.DbPokemonDetail
 import com.example.accenturechallenge.data.database.entities.DbPokemonType
+import com.example.accenturechallenge.data.network.pokemonapi.response.Ability
 import com.example.accenturechallenge.data.network.pokemonapi.response.GetPokemonItemResult
 import com.example.accenturechallenge.data.network.pokemonapi.response.ResourceResult
+import com.example.accenturechallenge.data.network.pokemonapi.response.Type
 import com.example.accenturechallenge.utils.POKEMON_IMAGE_BASE_URL
 import javax.inject.Inject
 
@@ -37,7 +39,7 @@ class ApiMapperImpl @Inject constructor() : ApiMapper {
             )
         }
 
-    override fun mapApiAbilityToPokemonAbility(apiResource: ResourceResult): DbPokemonAbility =
+    override fun mapApiResourceAbilityToPokemonAbility(apiResource: ResourceResult): DbPokemonAbility =
         with(apiResource) {
             val abilityId = regex.find(url)?.value ?: "0"
             DbPokemonAbility(
@@ -46,12 +48,27 @@ class ApiMapperImpl @Inject constructor() : ApiMapper {
             )
         }
 
-    override fun mapApiTypeToPokemonType(apiResource: ResourceResult): DbPokemonType =
+    override fun mapApiResourceTypeToPokemonType(apiResource: ResourceResult): DbPokemonType =
         with(apiResource) {
             val typeId = regex.find(url)?.value ?: "0"
             DbPokemonType(
                 typeId = typeId,
                 name = name
+            )
+        }
+
+    override fun mapApiTypeToPokemonType(apiType: Type): DbPokemonType = with(apiType) {
+        DbPokemonType(
+            typeId = regex.find(this.type.url)?.value ?: "0",
+            name = this.type.name
+        )
+    }
+
+    override fun mapApiAbilityToPokemonAbility(apiAbility: Ability): DbPokemonAbility =
+        with(apiAbility) {
+            DbPokemonAbility(
+                abilityId = regex.find(this.ability.url)?.value ?: "0",
+                name = this.ability.name
             )
         }
 

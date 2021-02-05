@@ -7,6 +7,7 @@ import com.example.accenturechallenge.data.database.entities.DbPokemonType
 import com.example.accenturechallenge.data.network.pokemonapi.response.Ability
 import com.example.accenturechallenge.data.network.pokemonapi.response.GetPokemonItemResult
 import com.example.accenturechallenge.data.network.pokemonapi.response.ResourceResult
+import com.example.accenturechallenge.data.network.pokemonapi.response.Type
 
 
 interface ApiMapper {
@@ -15,8 +16,15 @@ interface ApiMapper {
 
     fun mapApiPokemonDetailToModel(apiPokemon: GetPokemonItemResult): DbPokemonDetail
 
-    fun mapApiAbilityToPokemonAbility(apiResource: ResourceResult): DbPokemonAbility
+    fun mapApiResourceAbilityToPokemonAbility(apiResource: ResourceResult): DbPokemonAbility
 
-    fun mapApiTypeToPokemonType(apiResource: ResourceResult): DbPokemonType
+    fun mapApiResourceTypeToPokemonType(apiResource: ResourceResult): DbPokemonType
+
+    fun mapApiAbilityToPokemonAbility(apiAbility: Ability): DbPokemonAbility
+
+    fun mapApiTypeToPokemonType(apiType: Type): DbPokemonType
+
+
+
 
 }

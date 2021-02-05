@@ -77,21 +77,18 @@ class PokemonDetailFragment : Fragment() {
 
                     binding.apply {
 //                        toolbar.title = pokemonDetail.name //TODO see if it should stay
-                        pokemonName.text = pokemonDetail.name
-                        height.text = pokemonDetail.weight.toString()
-                        weight.text = pokemonDetail.height.toString()
-                        baseExperience.text = pokemonDetail.baseExperience.toString()
-                        pokemonDetailAppBar.imageViewDetail.loadImage("$POKEMON_IMAGE_BASE_URL${pokemonDetail.id}.png")
+                        pokemonName.text = pokemonDetail.pokemon.name
+                        height.text = pokemonDetail.pokemon.weight
+                        weight.text = pokemonDetail.pokemon.height
+                        baseExperience.text = pokemonDetail.pokemon.baseExperience
+                        pokemonDetailAppBar.imageViewDetail.loadImage("$POKEMON_IMAGE_BASE_URL${pokemonDetail.pokemon.pokemonDetailId}.png")
 
                         isFavouriteDetail.setOnClickListener {
                             pokemonDetailViewModel.favoritePokemon()
                         }
 
-                        setChipGroupChips(pokemonDetail.types.map { it.type.name }, chipsType)
-                        setChipGroupChips(
-                            pokemonDetail.abilities.map { it.ability.name },
-                            chipsAbility
-                        )
+                        setChipGroupChips(pokemonDetail.types.map { it.name }, chipsType)
+                        setChipGroupChips(pokemonDetail.abilities.map { it.name }, chipsAbility)
                     }
 
                 }

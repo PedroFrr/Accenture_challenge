@@ -11,7 +11,6 @@ import com.example.accenturechallenge.data.network.pokemonapi.mapper.ApiMapper
 import com.example.accenturechallenge.data.repository.Repository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import javax.inject.Inject
 
 @HiltWorker
 class PokemonTypeRefDataWorker @AssistedInject constructor(
@@ -29,7 +28,7 @@ class PokemonTypeRefDataWorker @AssistedInject constructor(
             Result.failure()
         }else{
             val pokemonTypeResource = result as Success
-            val pokemonTypes = pokemonTypeResource.data.resourceResults.map { apiMapper.mapApiTypeToPokemonType(it) }
+            val pokemonTypes = pokemonTypeResource.data.resourceResults.map { apiMapper.mapApiResourceTypeToPokemonType(it) }
 
             database.pokemonDao().insertAllTypesRef(pokemonTypes)
 

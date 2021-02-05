@@ -33,7 +33,9 @@ class PokemonRemoteMediator(
                 remoteKeys?.nextKey?.minus(POKEMON_PAGE_SIZE) ?: POKEMON_API_STARTING_INDEX
             }
             LoadType.PREPEND -> {
-                return MediatorResult.Success(true)
+                val remoteKeys = getRemoteKeyForFirstItem(state) ?: throw InvalidObjectException("Remote key and the prevKey should not be null")
+                remoteKeys.prevKey ?: return MediatorResult.Success(endOfPaginationReached = false)
+
             }
 
             LoadType.APPEND -> {
@@ -60,8 +62,7 @@ class PokemonRemoteMediator(
                     //TODO this can still be cleared, but I need to change the Favorites DataModel
 //                    database.pokemonDao().clearAllPokemons()
 //                }
-                val prevKey =
-                    if (page == POKEMON_API_STARTING_INDEX) null else page - POKEMON_PAGE_SIZE
+                val prevKey = if (page == POKEMON_API_STARTING_INDEX) null else page - POKEMON_PAGE_SIZE
                 val nextKey = if (endOfPaginationReached) null else page + POKEMON_PAGE_SIZE
                 val keys = pokemons.map {
                     DbRemoteKeys(id = it.id, prevKey = prevKey, nextKey = nextKey)
