@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#424242</color>
-    <color name="colorPrimaryDark">#1b1b1b</color>
+    <color name="colorPrimary">#303f9f</color>
+    <color name="colorPrimaryVariant">#303f9f</color>
+    <color name="colorPrimaryDark">#001970</color>
+    <color name="colorSecondary">#9fa8da</color>
     <color name="colorAccent">#6d6d6d</color>
     <color name="lightGray">#888888</color>
     <color name="white">#FFFFFF</color>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+    <color name="lightTeal">#FF03DAC5</color>
     <color name="black">#FF000000</color>
     <color name="colorWhiteCard">@color/cardview_light_background</color>
+    <color name ="lightRed">#ff7961</color>
+    <color name ="lightBlue">#757de8</color>
+    <color name="lightYellow">#ffffa8</color>
+    <color name="lightPurple">#fff1ff</color>
+    <color name="lightBrown">#a98274</color>
+    <color name="lightBlack">#484848</color>
+    <color name="darkTeal">#004d40</color>
+    <color name="darkRed">#b71c1c</color>
+    <color name="darkBlue">#0d47a1</color>
+    <color name="darkYellow">#fbc02d</color>
+    <color name="darkPurple">#6a1b9a</color>
+    <color name="darkBrown">#4e342e</color>
+    <color name="darkBlack">#000000</color>
+    <color name="ic_launcher_background">#000000</color>
 </resources>

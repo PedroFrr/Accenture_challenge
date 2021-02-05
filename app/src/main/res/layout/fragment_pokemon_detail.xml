@@ -1,14 +1,217 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.pokemons.detail.PokemonDetailFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
     <TextView
+        android:id="@+id/errorMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimary"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:textSize="@dimen/error_message_text_size"
+        android:text="@string/default_error_message" />
+
+    <include
+        android:id="@+id/pokemonDetailAppBar"
+        layout="@layout/pokemon_detail_appbar"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/pokemonContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:paddingTop="@dimen/padding_half"
+        android:paddingBottom="0dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-</FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/pokemonInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_half"
+                android:background="?attr/colorPrimary"
+                card_view:cardCornerRadius="@dimen/card_corner_radius"
+                card_view:cardElevation="@dimen/card_elevation">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/pokemonName"
+                        style="@style/TextAppearance.MaterialComponents.Headline4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="@dimen/padding_half"
+                        android:paddingEnd="@dimen/padding_half"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Bulbasaur"/>
+
+                    <TextView
+                        android:id="@+id/heightTitle"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:paddingStart="@dimen/padding_half"
+                        android:paddingEnd="@dimen/padding_half"
+                        android:text="@string/pokemon_height"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toBottomOf="@id/pokemonName"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/height" />
+
+                    <TextView
+                        android:id="@+id/height"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:paddingStart="@dimen/padding_half"
+                        android:paddingEnd="@dimen/padding_half"
+                        android:textColor="@color/black"
+                        app:layout_constraintBaseline_toBaselineOf="@+id/heightTitle"
+                        app:layout_constraintStart_toEndOf="@id/heightTitle"
+                        tools:text="50"/>
+
+                    <TextView
+                        android:id="@+id/weightTitle"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:paddingStart="@dimen/padding_half"
+                        android:paddingEnd="@dimen/padding_half"
+                        android:text="@string/pokemon_weight"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toBottomOf="@id/heightTitle"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/weight"/>
+
+                    <TextView
+                        android:id="@+id/weight"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:paddingStart="@dimen/padding_half"
+                        android:paddingEnd="@dimen/padding_half"
+                        android:textColor="@color/black"
+                        app:layout_constraintBaseline_toBaselineOf="@+id/weightTitle"
+                        app:layout_constraintStart_toEndOf="@id/weightTitle"
+                        tools:text="50"/>
+
+                    <TextView
+                        android:id="@+id/baseExperienceTitle"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:paddingStart="@dimen/padding_half"
+                        android:paddingEnd="@dimen/padding_half"
+                        android:text="@string/base_experience_pokemon"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        app:layout_constraintTop_toBottomOf="@id/weightTitle"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/baseExperience"/>
+
+                    <TextView
+                        android:id="@+id/baseExperience"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:paddingStart="@dimen/padding_half"
+                        android:paddingEnd="@dimen/padding_half"
+                        android:textColor="@color/black"
+                        app:layout_constraintBaseline_toBaselineOf="@+id/baseExperienceTitle"
+                        app:layout_constraintStart_toEndOf="@id/baseExperienceTitle"
+                        tools:text="50"/>
+
+                    <ImageView
+                        android:id="@+id/isFavouriteDetail"
+                        android:layout_width="@dimen/favorite_size"
+                        android:layout_height="@dimen/favorite_size"
+                        android:contentDescription="@string/favorite_pokemon_content_description"
+                        android:padding="@dimen/padding_standard"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_collapseMode="pin"
+                        tools:src="@drawable/ic_baseline_favorite_border_24" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/pokemonType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_half"
+                android:background="?attr/colorPrimary"
+                card_view:cardCornerRadius="@dimen/card_corner_radius"
+                card_view:cardElevation="@dimen/card_elevation">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipsType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/padding_half"
+                        android:paddingStart="@dimen/padding_half"
+                        android:paddingEnd="@dimen/padding_half"
+                        app:chipSpacing="8dp"
+                        app:singleSelection="false">
+
+                    </com.google.android.material.chip.ChipGroup>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/pokemonAbilities"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_half"
+                android:background="?attr/colorPrimary"
+                card_view:cardCornerRadius="@dimen/card_corner_radius"
+                card_view:cardElevation="@dimen/card_elevation">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipsAbility"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/padding_half"
+                    android:paddingStart="@dimen/padding_half"
+                    android:paddingEnd="@dimen/padding_half"
+                    app:chipSpacing="8dp"
+                    app:singleSelection="false">
+
+                </com.google.android.material.chip.ChipGroup>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

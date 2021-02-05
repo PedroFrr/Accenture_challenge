@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/pokemonListFragment"
+        android:id="@+id/pokemonList"
         android:icon="@drawable/ic_baseline_list_alt_24"
         android:title="@string/pokemons_tab" />
     <item
-        android:id="@+id/favoritesFragment"
+        android:id="@+id/favoritePokemonList"
         android:icon="@drawable/ic_baseline_favorite_24"
         android:title="@string/favorites_tab" />
 

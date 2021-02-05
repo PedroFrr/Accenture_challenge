@@ -69,8 +69,10 @@ dependencies {
     implementation "androidx.room:room-ktx:$rootProject.roomVersion"
 
     //Hilt
-    implementation "com.google.dagger:hilt-android:$rootProject.hiltVersion"
+    kapt "androidx.hilt:hilt-compiler:$rootProject.hiltWorkerVersion"
     kapt "com.google.dagger:hilt-android-compiler:$rootProject.hiltVersion"
+    implementation "com.google.dagger:hilt-android:$rootProject.hiltVersion"
+    implementation "androidx.hilt:hilt-work:$rootProject.hiltWorkerVersion"
 
 
     //Retrofit
@@ -98,9 +100,12 @@ dependencies {
     //Facebook shimmer
     implementation "com.facebook.shimmer:shimmer:$rootProject.shimmerVersion"
 
+    //Work manager
+    implementation "androidx.work:work-runtime-ktx:$rootProject.workVersion"
 
     //Test dependencies
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation "androidx.work:work-testing:$rootProject.workVersion"
 }

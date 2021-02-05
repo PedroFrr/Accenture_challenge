@@ -8,7 +8,7 @@ import androidx.room.withTransaction
 import com.example.accenturechallenge.data.database.AppDatabase
 import com.example.accenturechallenge.data.database.entities.DbPokemon
 import com.example.accenturechallenge.data.database.entities.DbRemoteKeys
-import com.example.accenturechallenge.data.network.pokemonapi.PokemonService
+import com.example.accenturechallenge.data.network.pokemonapi.PokemonClient
 import com.example.accenturechallenge.data.network.pokemonapi.mapper.ApiMapper
 import com.example.accenturechallenge.utils.POKEMON_API_STARTING_INDEX
 import com.example.accenturechallenge.utils.POKEMON_PAGE_SIZE
@@ -18,7 +18,7 @@ import java.io.InvalidObjectException
 
 @ExperimentalPagingApi
 class PokemonRemoteMediator(
-    private val pokemonService: PokemonService,
+    private val pokemonClient: PokemonClient,
     private val database: AppDatabase,
     private val apiMapper: ApiMapper
 ) : RemoteMediator<Int, DbPokemon>() {
@@ -33,7 +33,9 @@ class PokemonRemoteMediator(
                 remoteKeys?.nextKey?.minus(POKEMON_PAGE_SIZE) ?: POKEMON_API_STARTING_INDEX
             }
             LoadType.PREPEND -> {
-                return MediatorResult.Success(true)
+                val remoteKeys = getRemoteKeyForFirstItem(state) ?: throw InvalidObjectException("Remote key and the prevKey should not be null")
+                remoteKeys.prevKey ?: return MediatorResult.Success(endOfPaginationReached = false)
+
             }
 
             LoadType.APPEND -> {
@@ -44,27 +46,29 @@ class PokemonRemoteMediator(
 
 
         try {
-            val apiResponse = pokemonService.fetchPokemons(
+            val apiResponse = pokemonClient.fetchPokemons(
                 offset = page,
                 itemsPerPage = state.config.pageSize
             )
 
-            val pokemons = apiResponse.pokemonResults.map { apiMapper.mapApiPokemonToModel(it) }
+            val pokemons = apiResponse.resourceResults.map { apiMapper.mapApiPokemonToModel(it) }
             val endOfPaginationReached = apiResponse.next == null
             database.withTransaction {
+
+                //TODO revisit. See if i can separate the data model into Pokemons and Favorites
                 // clear all tables in the database
-                if (loadType == LoadType.REFRESH) {
-                    database.remoteKeysDao().clearRemoteKeys()
-                    database.pokemonDao().clearAllPokemons()
-                }
-                val prevKey =
-                    if (page == POKEMON_API_STARTING_INDEX) null else page - POKEMON_PAGE_SIZE
+//                if (loadType == LoadType.REFRESH) {
+//                    database.remoteKeysDao().clearRemoteKeys()
+                    //TODO this can still be cleared, but I need to change the Favorites DataModel
+//                    database.pokemonDao().clearAllPokemons()
+//                }
+                val prevKey = if (page == POKEMON_API_STARTING_INDEX) null else page - POKEMON_PAGE_SIZE
                 val nextKey = if (endOfPaginationReached) null else page + POKEMON_PAGE_SIZE
                 val keys = pokemons.map {
                     DbRemoteKeys(id = it.id, prevKey = prevKey, nextKey = nextKey)
                 }
                 database.remoteKeysDao().insertAll(keys)
-                database.pokemonDao().insertAll(pokemons)
+                database.pokemonDao().insertAllPokemons(pokemons)
             }
             return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
         } catch (exception: IOException) {

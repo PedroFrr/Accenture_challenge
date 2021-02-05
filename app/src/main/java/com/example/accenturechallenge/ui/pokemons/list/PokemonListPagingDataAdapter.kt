@@ -2,6 +2,7 @@ package com.example.accenturechallenge.ui.pokemons.list
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.Navigation
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -48,14 +49,19 @@ class PokemonListPagingDataAdapter(
             with(binding) {
                 pokemonName.text = item.name
                 //Sets favorite icon based on its condition
-                val favoriteDrawable =
-                    if (item.isFavorite) R.drawable.ic_baseline_favorite_24 else R.drawable.ic_baseline_favorite_border_24
+                val favoriteDrawable = if (item.isFavorite) R.drawable.ic_baseline_favorite_24 else R.drawable.ic_baseline_favorite_border_24
                 isFavourite.setImageResource(favoriteDrawable)
                 pokemonImage.loadImage(item.url)
 
                 isFavourite.setOnClickListener {
                     favoritePokemon(item)
                 }
+
+                pokemonCard.setOnClickListener {
+                    val directions = PokemonListFragmentDirections.pokemonListToDetail(item.id)
+                    Navigation.findNavController(it).navigate(directions)
+                }
+
             }
 
         }
