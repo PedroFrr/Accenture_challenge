@@ -49,7 +49,7 @@ abstract class AppDatabase : RoomDatabase() {
 
                             //The Workers defined below won't start until these conditions are met (they are guaranteed to start even if they're only met in the future)
                             val constraints = Constraints.Builder()
-                                .setRequiredNetworkType(NetworkType.UNMETERED)
+                                .setRequiredNetworkType(NetworkType.CONNECTED)
                                 .setRequiresStorageNotLow(true)
                                 .build()
 

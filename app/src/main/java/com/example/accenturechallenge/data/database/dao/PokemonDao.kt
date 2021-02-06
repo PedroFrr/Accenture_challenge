@@ -8,9 +8,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PokemonDao {
 
-    //TODO change onConflict strategy to replace
-    //OnConflicted is set to IGNORE as to not replace pokemons already downloaded (and possibly favorited by the user)
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllPokemons(pokemons: List<DbPokemon>)
 
     @Query("SELECT * FROM pokemon")
@@ -33,6 +31,9 @@ interface PokemonDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPokemonDetail(pokemonDetail: DbPokemonDetail)
+
+    @Query("SELECT * FROM pokemon")
+    suspend fun observeAllPokemons(): List<DbPokemon>
 
 
     /**

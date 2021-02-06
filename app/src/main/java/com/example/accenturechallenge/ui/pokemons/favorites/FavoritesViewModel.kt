@@ -25,7 +25,9 @@ class FavoritesViewModel @Inject constructor(
         viewModelScope.launch {
             repository.fetchFavoritePokemons()
                 .collect {
-                    _favoritePokemons.postValue(it)
+                    //orders list in alphabetical order
+                    val sortedList = it.sortedBy { pokemonResult ->   pokemonResult.pokemon.name }
+                    _favoritePokemons.postValue(sortedList)
                 }
 
         }

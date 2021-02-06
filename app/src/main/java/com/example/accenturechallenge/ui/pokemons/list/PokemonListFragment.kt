@@ -17,10 +17,7 @@ import com.example.accenturechallenge.utils.gone
 import com.example.accenturechallenge.utils.visible
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 /** [Fragment] class to represent cat breed list.
@@ -74,16 +71,33 @@ class PokemonListFragment : Fragment() {
 
         pokemonListAdapter.addLoadStateListener { loadState ->
 
-            //TODO revisit some ticks on app
-            if (loadState.source.refresh is LoadState.Loading) {
-                _binding?.progressBar?.visible()
-            } else {
-                _binding?.progressBar?.gone()
-
-            }
+//            //TODO revisit some ticks on app
+//            if (loadState.source.refresh is LoadState.Loading) {
+//                _binding?.progressBar?.visible()
+//            } else {
+//                _binding?.progressBar?.gone()
+//
+//            }
 
             // Show the retry state if initial load or refresh fails.
-            _binding?.retryButton?.isVisible = loadState.source.refresh is LoadState.Error
+            when(loadState.refresh){
+                is LoadState.Error -> {
+                    _binding?.retryButton?.visible()
+                    _binding?.pokemonRecyclerView?.gone()
+                    _binding?.progressBar?.gone()
+                }
+                is LoadState.Loading -> {
+                    _binding?.retryButton?.gone()
+                    _binding?.pokemonRecyclerView?.gone()
+                    _binding?.progressBar?.visible()
+                }
+                is LoadState.NotLoading -> {
+                    _binding?.retryButton?.gone()
+                    _binding?.pokemonRecyclerView?.visible()
+                    _binding?.progressBar?.gone()
+                }
+            }
+
 
 
         }
@@ -100,16 +114,18 @@ class PokemonListFragment : Fragment() {
                 }
         }
 
-        // Scroll to top when the list is refreshed from network.
         lifecycleScope.launch {
             pokemonListAdapter.loadStateFlow
                 // Only emit when REFRESH LoadState for RemoteMediator changes.
                 .distinctUntilChangedBy { it.refresh }
                 // Only react to cases where Remote REFRESH completes i.e., NotLoading.
-                .filter { it.refresh is LoadState.NotLoading }
-                .collect{ _binding?.pokemonRecyclerView?.scrollToPosition(0) }
+                .filter {it.refresh is LoadState.NotLoading }
+                .collectLatest {
+                    _binding?.pokemonRecyclerView?.visible()
+                    _binding?.progressBar?.gone()
+                    _binding?.pokemonRecyclerView?.scrollToPosition(0)
+                }
         }
-
 
     }
 

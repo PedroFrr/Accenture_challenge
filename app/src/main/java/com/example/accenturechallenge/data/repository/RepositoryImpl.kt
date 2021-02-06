@@ -50,6 +50,7 @@ class RepositoryImpl @Inject constructor(
 
     override fun fetchFavoritePokemons(): Flow<List<DbPokemonWithOrWithoutFavorites>> = database.pokemonDao().fetchFavoritePokemons().map { it.filter { item -> item.favorite != null } }
 
+
     override suspend fun favoritePokemon(pokemonWithOrWithoutWithFavorite: DbPokemonWithOrWithoutFavorites) {
 
        /*
