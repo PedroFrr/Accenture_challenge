@@ -16,8 +16,9 @@ import retrofit2.HttpException
 import java.io.IOException
 import java.io.InvalidObjectException
 
+//TODO remove query parameter if not used
 @ExperimentalPagingApi
-class PokemonRemoteMediator (
+class PokemonRemoteMediator(
     private val query: String,
     private val pokemonClient: PokemonClient,
     private val database: AppDatabase,
@@ -35,13 +36,15 @@ class PokemonRemoteMediator (
             }
             LoadType.PREPEND -> {
                 val remoteKeys = getRemoteKeyForFirstItem(state) ?: throw InvalidObjectException("Remote key and the prevKey should not be null")
-                remoteKeys.prevKey ?: return MediatorResult.Success(endOfPaginationReached = false)
+                val prevKey = remoteKeys.prevKey ?: return MediatorResult.Success(endOfPaginationReached = true)
+                remoteKeys.prevKey
 
             }
 
             LoadType.APPEND -> {
-                val remoteKeys = getRemoteKeyForLastItem(state) ?: throw InvalidObjectException("Result is empty")
-                remoteKeys.nextKey ?: return MediatorResult.Success(true)
+                val remoteKeys = getRemoteKeyForLastItem(state)
+                if (remoteKeys?.nextKey == null) { throw InvalidObjectException("Remote key should not be null for $loadType") }
+                remoteKeys.nextKey
             }
         }
 
@@ -58,14 +61,12 @@ class PokemonRemoteMediator (
             val endOfPaginationReached = apiResponse.next == null
             database.withTransaction {
 
-                //TODO revisit. See if i can separate the data model into Pokemons and Favorites
-                // clear all tables in the database
-//                if (loadType == LoadType.REFRESH) {
-//                    database.remoteKeysDao().clearRemoteKeys()
-                    //TODO this can still be cleared, but I need to change the Favorites DataModel
-//                    database.pokemonDao().clearAllPokemons()
-//                }
-                val prevKey = if (page == POKEMON_API_STARTING_INDEX) null else page - POKEMON_PAGE_SIZE
+                if (loadType == LoadType.REFRESH) {
+                    database.remoteKeysDao().clearRemoteKeys()
+                    database.pokemonDao().clearAllPokemons()
+                }
+                val prevKey =
+                    if (page == POKEMON_API_STARTING_INDEX) null else page - POKEMON_PAGE_SIZE
                 val nextKey = if (endOfPaginationReached) null else page + POKEMON_PAGE_SIZE
                 val keys = pokemons.map {
                     DbRemoteKeys(id = it.id, prevKey = prevKey, nextKey = nextKey)

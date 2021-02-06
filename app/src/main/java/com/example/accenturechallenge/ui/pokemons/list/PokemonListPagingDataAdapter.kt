@@ -7,25 +7,44 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.accenturechallenge.R
+import com.example.accenturechallenge.core.PokemonUiModel
 import com.example.accenturechallenge.data.database.entities.DbPokemonWithOrWithoutFavorites
 import com.example.accenturechallenge.databinding.ListItemPokemonBinding
 import com.example.accenturechallenge.utils.loadImage
 
 class PokemonListPagingDataAdapter(
     private val favoritePokemon: (pokemonWithOrWithout: DbPokemonWithOrWithoutFavorites) -> Unit
-) : PagingDataAdapter<DbPokemonWithOrWithoutFavorites, PokemonListPagingDataAdapter.PokemonViewHolder>(
+) : PagingDataAdapter<PokemonUiModel, RecyclerView.ViewHolder>(
     PokemonListDiffCallBack()
 ) {
 
-    override fun onBindViewHolder(holder: PokemonViewHolder, position: Int) {
-        getItem(position)?.let {
-            holder.bind(it, favoritePokemon)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val pokemonUiModel = getItem(position)
+        pokemonUiModel.let {
+            when (it) {
+                is PokemonUiModel.PokemonItem -> (holder as PokemonViewHolder).bind(it.pokemonResult, favoritePokemon)
+                is PokemonUiModel.SeparatorItem -> (holder as PokemonSeparatorViewHolder).bind(it.description)
+            }
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonViewHolder {
-        return PokemonViewHolder.from(parent)
+    override fun getItemViewType(position: Int): Int {
+        return when (getItem(position)) {
+            is PokemonUiModel.PokemonItem -> R.layout.list_item_pokemon
+            is PokemonUiModel.SeparatorItem -> R.layout.separator_pokemon_view_item
+            null -> throw UnsupportedOperationException("Unknown view")
+        }
     }
+
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return if (viewType == R.layout.list_item_pokemon) {
+            PokemonViewHolder.from(parent)
+        } else {
+            PokemonSeparatorViewHolder.from(parent)
+        }
+    }
+
 
     class PokemonViewHolder private constructor(
         private val binding: ListItemPokemonBinding
@@ -70,10 +89,16 @@ class PokemonListPagingDataAdapter(
     }
 }
 
-private class PokemonListDiffCallBack : DiffUtil.ItemCallback<DbPokemonWithOrWithoutFavorites>() {
-    override fun areContentsTheSame(oldItem: DbPokemonWithOrWithoutFavorites, newItem: DbPokemonWithOrWithoutFavorites): Boolean =
-        oldItem.pokemon.id == newItem.pokemon.id
+private class PokemonListDiffCallBack : DiffUtil.ItemCallback<PokemonUiModel>() {
 
-    override fun areItemsTheSame(oldItem: DbPokemonWithOrWithoutFavorites, newItem: DbPokemonWithOrWithoutFavorites): Boolean =
+    override fun areItemsTheSame(oldItem: PokemonUiModel, newItem: PokemonUiModel): Boolean {
+        return (oldItem is PokemonUiModel.PokemonItem && newItem is PokemonUiModel.PokemonItem &&
+                oldItem.pokemonResult.pokemon.id == newItem.pokemonResult.pokemon.id) ||
+                (oldItem is PokemonUiModel.SeparatorItem && newItem is PokemonUiModel.SeparatorItem &&
+                        oldItem.description == newItem.description)
+    }
+
+
+    override fun areContentsTheSame(oldItem: PokemonUiModel, newItem: PokemonUiModel): Boolean =
         oldItem == newItem
 }

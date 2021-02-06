@@ -9,13 +9,18 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
+import androidx.recyclerview.widget.GridLayoutManager
+import com.example.accenturechallenge.R
 import com.example.accenturechallenge.data.database.entities.DbPokemonWithOrWithoutFavorites
 import com.example.accenturechallenge.databinding.FragmentPokemonListBinding
 import com.example.accenturechallenge.utils.gone
 import com.example.accenturechallenge.utils.visible
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 /** [Fragment] class to represent cat breed list.
@@ -24,13 +29,10 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class PokemonListFragment : Fragment() {
-//    private val binding by viewBinding(FragmentPokemonListBinding::bind)
 
     private var _binding: FragmentPokemonListBinding? = null
     private val pokemonListViewModel: PokemonListViewModel by viewModels()
     private val pokemonListAdapter by lazy { PokemonListPagingDataAdapter(::favoritePokemon) }
-
-    private var searchJob: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,7 +46,6 @@ class PokemonListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 
         initUi()
         fetchPokemons()
@@ -60,8 +61,11 @@ class PokemonListFragment : Fragment() {
     }
 
     private fun initAdapter() {
+        //GridColumnCount represents the number of columns to display on the layout
+        //In portrait mode -> 1 column; in landscape -> 2 columns
+        val gridColumnCount = resources.getInteger(R.integer.grid_column_count)
         _binding?.pokemonRecyclerView?.apply {
-            adapter = pokemonListAdapter
+            layoutManager = GridLayoutManager(requireContext(), gridColumnCount)
             adapter = pokemonListAdapter.withLoadStateHeaderAndFooter(
                 header = PokemonsLoadStateAdapter { pokemonListAdapter.retry() },
                 footer = PokemonsLoadStateAdapter { pokemonListAdapter.retry() })
@@ -79,21 +83,33 @@ class PokemonListFragment : Fragment() {
             }
 
             // Show the retry state if initial load or refresh fails.
-            _binding?.retryButton?.isVisible = loadState.refresh is LoadState.Error
+            _binding?.retryButton?.isVisible = loadState.source.refresh is LoadState.Error
 
 
         }
+
 
     }
 
     private fun fetchPokemons() {
 
-        viewLifecycleOwner.lifecycleScope.launch {
+        lifecycleScope.launch {
             pokemonListViewModel.fetchPokemons()
                 .collectLatest { pagingData ->
                     pokemonListAdapter.submitData(pagingData)
                 }
         }
+
+        // Scroll to top when the list is refreshed from network.
+        lifecycleScope.launch {
+            pokemonListAdapter.loadStateFlow
+                // Only emit when REFRESH LoadState for RemoteMediator changes.
+                .distinctUntilChangedBy { it.refresh }
+                // Only react to cases where Remote REFRESH completes i.e., NotLoading.
+                .filter { it.refresh is LoadState.NotLoading }
+                .collect{ _binding?.pokemonRecyclerView?.scrollToPosition(0) }
+        }
+
 
     }
 
