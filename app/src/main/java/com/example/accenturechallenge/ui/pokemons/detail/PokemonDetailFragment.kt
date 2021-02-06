@@ -112,9 +112,8 @@ class PokemonDetailFragment : Fragment() {
          * Observe changes to isFavorite from DB
          */
 
-        pokemonDetailViewModel.getDbPokemon().observe(viewLifecycleOwner, { pokemon ->
-            val favoriteDrawable =
-                if (pokemon.isFavorite) R.drawable.ic_baseline_favorite_24 else R.drawable.ic_baseline_favorite_border_24
+        pokemonDetailViewModel.getDbPokemon().observe(viewLifecycleOwner, { pokemonWithOrWithoutFavorites ->
+            val favoriteDrawable = if (pokemonWithOrWithoutFavorites.favorite != null) R.drawable.ic_baseline_favorite_24 else R.drawable.ic_baseline_favorite_border_24
             binding.isFavouriteDetail.setImageResource(favoriteDrawable)
         })
 

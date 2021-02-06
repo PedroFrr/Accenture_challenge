@@ -6,10 +6,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.accenturechallenge.data.*
 import com.example.accenturechallenge.data.database.AppDatabase
-import com.example.accenturechallenge.data.database.entities.DbPokemon
-import com.example.accenturechallenge.data.database.entities.DbPokemonAbilityCrossRef
-import com.example.accenturechallenge.data.database.entities.DbPokemonTypeCrossRef
-import com.example.accenturechallenge.data.database.entities.DbPokemonWithAbilitiesAndTypes
+import com.example.accenturechallenge.data.database.entities.*
 import com.example.accenturechallenge.data.network.pokemonapi.PokemonClient
 import com.example.accenturechallenge.data.network.pokemonapi.mapper.ApiMapper
 import com.example.accenturechallenge.data.network.pokemonapi.response.GetResourceResponse
@@ -18,6 +15,7 @@ import com.example.accenturechallenge.data.network.webhook.request.FavoritePokem
 import com.example.accenturechallenge.utils.POKEMON_PAGE_SIZE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(
@@ -31,36 +29,49 @@ class RepositoryImpl @Inject constructor(
      * RemoteMediator which keeps a local database cache in the case the user has no internet connection
      */
     @ExperimentalPagingApi
-    override fun fetchPokemons(): Flow<PagingData<DbPokemon>> {
+    override fun fetchPokemons(): Flow<PagingData<DbPokemonWithOrWithoutFavorites>> {
 
         return Pager(
             config = PagingConfig(
                 pageSize = POKEMON_PAGE_SIZE,
                 enablePlaceholders = true
             ),
+            //TODO change query
             remoteMediator = PokemonRemoteMediator(
+                "",
                 pokemonClient,
                 database,
                 apiMapper
             ),
-            pagingSourceFactory = { database.pokemonDao().fetchAllPokemons() }
+            pagingSourceFactory = { database.pokemonDao().getPokemonWithFavorites() }
 
         ).flow
 
 
     }
 
-    override fun fetchFavoritePokemons(): Flow<List<DbPokemon>> =
-        database.pokemonDao().fetchFavoritePokemons()
+    override fun fetchFavoritePokemons(): Flow<List<DbPokemonWithOrWithoutFavorites>> = database.pokemonDao().fetchFavoritePokemons().map { it.filter { item -> item.favorite != null } }
 
-    override suspend fun favoritePokemon(pokemon: DbPokemon) {
-        database.pokemonDao().favoritePokemon(pokemon.id)
+    override suspend fun favoritePokemon(pokemonWithOrWithoutWithFavorite: DbPokemonWithOrWithoutFavorites) {
 
+       /*
+       Favorites pokemon if it's not yet a Favorite
+       Unfavorites it otherwise
+        */
+        if(pokemonWithOrWithoutWithFavorite.favorite == null){
+            database.pokemonDao().favoritePokemon(DbFavorite(pokemonWithOrWithoutWithFavorite.pokemon.id))
+        }else{
+            database.pokemonDao().unfavoritePokemon(DbFavorite(pokemonWithOrWithoutWithFavorite.pokemon.id))
+        }
+
+        /*
+        Sends POST request to Webhook service
+         */
         val request = FavoritePokemonRequest(
-            id = pokemon.id,
-            name = pokemon.name,
+            id = pokemonWithOrWithoutWithFavorite.pokemon.id,
+            name = pokemonWithOrWithoutWithFavorite.pokemon.name,
             timestamp = System.currentTimeMillis(),
-            wasFavorite = pokemon.isFavorite.not()
+            wasFavorite = pokemonWithOrWithoutWithFavorite.favorite == null
         )
         webhookService.postFavorite(request)
 
@@ -122,7 +133,7 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getDbPokemonDetail(pokemonId: String): Flow<DbPokemon> = database.pokemonDao().fetchPokemonDetail(pokemonId)
+    override fun getDbPokemonDetail(pokemonId: String): Flow<DbPokemonWithOrWithoutFavorites> = database.pokemonDao().fetchPokemonDetail(pokemonId)
 
     override suspend fun fetchPokemonAbilities(): Result<GetResourceResponse> = pokemonClient.fetchPokemonAbilities()
 

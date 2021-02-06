@@ -7,11 +7,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.accenturechallenge.R
-import com.example.accenturechallenge.data.database.entities.DbPokemon
+import com.example.accenturechallenge.data.database.entities.DbPokemonWithOrWithoutFavorites
 import com.example.accenturechallenge.databinding.ListItemPokemonBinding
 import com.example.accenturechallenge.utils.loadImage
 
-class FavoritesAdapter(private val onFavoritePokemon: (pokemon: DbPokemon) -> Unit) : ListAdapter<DbPokemon, FavoritesAdapter.PokemonViewHolder>(
+class FavoritesAdapter(private val onFavoritePokemon: (pokemon: DbPokemonWithOrWithoutFavorites) -> Unit) : ListAdapter<DbPokemonWithOrWithoutFavorites, FavoritesAdapter.PokemonViewHolder>(
     PokemonListDiffCallBack()
 ) {
 
@@ -41,20 +41,20 @@ class FavoritesAdapter(private val onFavoritePokemon: (pokemon: DbPokemon) -> Un
         }
 
         fun bind(
-            item: DbPokemon,
-            onFavoritePokemon: (pokemon: DbPokemon) -> Unit
+            item: DbPokemonWithOrWithoutFavorites,
+            onFavoritePokemon: (pokemonWithFavorites: DbPokemonWithOrWithoutFavorites) -> Unit
         ) {
             with(binding) {
-                pokemonName.text = item.name
+                pokemonName.text = item.pokemon.name
                 //Here all the Pokemons are favorite
                 isFavourite.setImageResource(R.drawable.ic_baseline_favorite_24)
                 isFavourite.setOnClickListener {
                     onFavoritePokemon(item)
                 }
-                pokemonImage.loadImage(item.url)
+                pokemonImage.loadImage(item.pokemon.url)
 
                 pokemonCard.setOnClickListener {
-                    val directions = FavoritesFragmentDirections.favoriteListoDetail(item.id)
+                    val directions = FavoritesFragmentDirections.favoriteListoDetail(item.pokemon.id)
                     Navigation.findNavController(it).navigate(directions)
                 }
 
@@ -65,10 +65,10 @@ class FavoritesAdapter(private val onFavoritePokemon: (pokemon: DbPokemon) -> Un
     }
 }
 
-private class PokemonListDiffCallBack : DiffUtil.ItemCallback<DbPokemon>() {
-    override fun areContentsTheSame(oldItem: DbPokemon, newItem: DbPokemon): Boolean =
-        oldItem.id == newItem.id
+private class PokemonListDiffCallBack : DiffUtil.ItemCallback<DbPokemonWithOrWithoutFavorites>() {
+    override fun areContentsTheSame(oldItem: DbPokemonWithOrWithoutFavorites, newItem: DbPokemonWithOrWithoutFavorites): Boolean =
+        oldItem.pokemon.id == newItem.pokemon.id
 
-    override fun areItemsTheSame(oldItem: DbPokemon, newItem: DbPokemon): Boolean =
+    override fun areItemsTheSame(oldItem: DbPokemonWithOrWithoutFavorites, newItem: DbPokemonWithOrWithoutFavorites): Boolean =
         oldItem == newItem
 }

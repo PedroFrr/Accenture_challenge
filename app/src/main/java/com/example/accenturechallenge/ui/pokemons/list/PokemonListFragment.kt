@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
-import com.example.accenturechallenge.data.database.entities.DbPokemon
+import com.example.accenturechallenge.data.database.entities.DbPokemonWithOrWithoutFavorites
 import com.example.accenturechallenge.databinding.FragmentPokemonListBinding
 import com.example.accenturechallenge.utils.gone
 import com.example.accenturechallenge.utils.visible
@@ -97,8 +97,8 @@ class PokemonListFragment : Fragment() {
 
     }
 
-    private fun favoritePokemon(pokemon: DbPokemon) {
-        pokemonListViewModel.favoritePokemon(pokemon)
+    private fun favoritePokemon(pokemonWithOrWithoutWithFavorite: DbPokemonWithOrWithoutFavorites) {
+        pokemonListViewModel.favoritePokemon(pokemonWithOrWithoutWithFavorite)
     }
 
     override fun onDestroyView() {

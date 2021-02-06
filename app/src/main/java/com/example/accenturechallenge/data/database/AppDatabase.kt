@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
  * SQLite Database for storing the Pokemon API results
  */
 @Database(
-    entities = [DbPokemon::class, DbRemoteKeys::class, DbPokemonDetail::class, DbPokemonAbility::class, DbPokemonAbilityCrossRef::class, DbPokemonType::class, DbPokemonTypeCrossRef::class],
+    entities = [DbPokemon::class, DbRemoteKeys::class, DbPokemonDetail::class, DbPokemonAbility::class, DbPokemonAbilityCrossRef::class, DbPokemonType::class, DbPokemonTypeCrossRef::class, DbFavorite::class],
     version = 1,
     exportSchema = false
 )

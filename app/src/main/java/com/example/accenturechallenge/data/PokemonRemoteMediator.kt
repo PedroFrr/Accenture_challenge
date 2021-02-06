@@ -6,7 +6,7 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.example.accenturechallenge.data.database.AppDatabase
-import com.example.accenturechallenge.data.database.entities.DbPokemon
+import com.example.accenturechallenge.data.database.entities.DbPokemonWithOrWithoutFavorites
 import com.example.accenturechallenge.data.database.entities.DbRemoteKeys
 import com.example.accenturechallenge.data.network.pokemonapi.PokemonClient
 import com.example.accenturechallenge.data.network.pokemonapi.mapper.ApiMapper
@@ -17,15 +17,16 @@ import java.io.IOException
 import java.io.InvalidObjectException
 
 @ExperimentalPagingApi
-class PokemonRemoteMediator(
+class PokemonRemoteMediator (
+    private val query: String,
     private val pokemonClient: PokemonClient,
     private val database: AppDatabase,
     private val apiMapper: ApiMapper
-) : RemoteMediator<Int, DbPokemon>() {
+) : RemoteMediator<Int, DbPokemonWithOrWithoutFavorites>() {
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, DbPokemon>
+        state: PagingState<Int, DbPokemonWithOrWithoutFavorites>
     ): MediatorResult {
         val page = when (loadType) {
             LoadType.REFRESH -> {
@@ -51,7 +52,9 @@ class PokemonRemoteMediator(
                 itemsPerPage = state.config.pageSize
             )
 
-            val pokemons = apiResponse.resourceResults.map { apiMapper.mapApiPokemonToModel(it) }
+//            val apiFilteredResponse = apiResponse.resourceResults.filter { it.name.toLowerCase(Locale.ENGLISH).contains(query.toLowerCase(Locale.ENGLISH)) }
+            val apiFilteredResponse = apiResponse.resourceResults
+            val pokemons = apiFilteredResponse.map { apiMapper.mapApiPokemonToModel(it) }
             val endOfPaginationReached = apiResponse.next == null
             database.withTransaction {
 
@@ -78,34 +81,34 @@ class PokemonRemoteMediator(
         }
     }
 
-    private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, DbPokemon>): DbRemoteKeys? {
+    private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, DbPokemonWithOrWithoutFavorites>): DbRemoteKeys? {
         // Get the last page that was retrieved, that contained items.
         // From that last page, get the last item
         return state.pages.lastOrNull() { it.data.isNotEmpty() }?.data?.lastOrNull()
-            ?.let { pokemon ->
+            ?.let { pokemonFavorite ->
                 // Get the remote keys of the last item retrieved
-                database.remoteKeysDao().remoteKeysPokemonId(pokemon.id)
+                database.remoteKeysDao().remoteKeysPokemonId(pokemonFavorite.pokemon.id)
             }
     }
 
-    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, DbPokemon>): DbRemoteKeys? {
+    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, DbPokemonWithOrWithoutFavorites>): DbRemoteKeys? {
         // Get the first page that was retrieved, that contained items.
         // From that first page, get the first item
         return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()
-            ?.let { pokemon ->
+            ?.let { pokemonFavorite ->
                 // Get the remote keys of the first items retrieved
-                database.remoteKeysDao().remoteKeysPokemonId(pokemon.id)
+                database.remoteKeysDao().remoteKeysPokemonId(pokemonFavorite.pokemon.id)
             }
     }
 
     private suspend fun getRemoteKeyClosestToCurrentPosition(
-        state: PagingState<Int, DbPokemon>
+        state: PagingState<Int, DbPokemonWithOrWithoutFavorites>
     ): DbRemoteKeys? {
         // The paging library is trying to load data after the anchor position
         // Get the item closest to the anchor position
         return state.anchorPosition?.let { position ->
-            state.closestItemToPosition(position)?.id?.let { pokemonId ->
-                database.remoteKeysDao().remoteKeysPokemonId(pokemonId)
+            state.closestItemToPosition(position)?.pokemon?.id?.let { pokemonFavoriteId ->
+                database.remoteKeysDao().remoteKeysPokemonId(pokemonFavoriteId)
             }
         }
     }

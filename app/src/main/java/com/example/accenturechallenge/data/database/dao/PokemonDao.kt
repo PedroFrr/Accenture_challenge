@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PokemonDao {
 
+    //TODO change onConflict strategy to replace
     //OnConflicted is set to IGNORE as to not replace pokemons already downloaded (and possibly favorited by the user)
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAllPokemons(pokemons: List<DbPokemon>)
@@ -18,14 +19,17 @@ interface PokemonDao {
     @Query("DELETE FROM pokemon")
     suspend fun clearAllPokemons()
 
-    @Query("UPDATE pokemon SET isFavorite =  NOT isFavorite WHERE id = :pokemonId")
-    suspend fun favoritePokemon(pokemonId: String)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun favoritePokemon(pokemonFavorite: DbFavorite)
 
-    @Query("SELECT * FROM pokemon WHERE isFavorite = 1")
-    fun fetchFavoritePokemons(): Flow<List<DbPokemon>>
+    @Delete
+    suspend fun unfavoritePokemon(pokemonFavorite: DbFavorite)
+
+    @Query("SELECT * FROM pokemon ")
+    fun fetchFavoritePokemons(): Flow<List<DbPokemonWithOrWithoutFavorites>>
 
     @Query("SELECT * FROM pokemon WHERE id = :pokemonId LIMIT 1")
-    fun fetchPokemonDetail(pokemonId: String): Flow<DbPokemon>
+    fun fetchPokemonDetail(pokemonId: String): Flow<DbPokemonWithOrWithoutFavorites>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPokemonDetail(pokemonDetail: DbPokemonDetail)
@@ -41,6 +45,13 @@ interface PokemonDao {
     suspend fun insertAllTypesRef(abilities: List<DbPokemonType>)
 
     /**
+     * One to One queries and relationships
+     */
+    @Transaction
+    @Query("SELECT * FROM pokemon")
+    fun getPokemonWithFavorites(): PagingSource<Int, DbPokemonWithOrWithoutFavorites>
+
+    /**
      * Many to Many queries and relationships
      */
 
@@ -50,6 +61,7 @@ interface PokemonDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPokemonWithTypes(pokemonTypeCrossRef: List<DbPokemonTypeCrossRef>)
 
+    @Transaction
     @Query("SELECT * FROM pokemon_detail WHERE pokemonDetailId = :pokemonId")
     suspend fun getPokemonWithAbilitiesAndTypes(pokemonId: String): DbPokemonWithAbilitiesAndTypes?
 

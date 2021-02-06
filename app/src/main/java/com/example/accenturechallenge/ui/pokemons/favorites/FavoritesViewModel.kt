@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.accenturechallenge.data.database.entities.DbPokemon
+import com.example.accenturechallenge.data.database.entities.DbPokemonWithOrWithoutFavorites
 import com.example.accenturechallenge.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
@@ -16,12 +16,12 @@ class FavoritesViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    private val _favoritePokemons = MutableLiveData<List<DbPokemon>>()
-    fun getFavoritePokemons(): LiveData<List<DbPokemon>> = _favoritePokemons
+    private val _favoritePokemons = MutableLiveData<List<DbPokemonWithOrWithoutFavorites>>()
+    fun getFavoritePokemons(): LiveData<List<DbPokemonWithOrWithoutFavorites>> = _favoritePokemons
 
     init {
         viewModelScope.launch {
-            val favorites = repository.fetchFavoritePokemons()
+            repository.fetchFavoritePokemons()
                 .collect {
                     _favoritePokemons.postValue(it)
                 }
@@ -29,9 +29,9 @@ class FavoritesViewModel @Inject constructor(
         }
     }
 
-    fun favoritePokemon(pokemon: DbPokemon) {
+    fun favoritePokemon(pokemonWithFavorites: DbPokemonWithOrWithoutFavorites) {
         viewModelScope.launch {
-            repository.favoritePokemon(pokemon)
+            repository.favoritePokemon(pokemonWithFavorites)
         }
     }
 }

@@ -9,6 +9,4 @@ data class DbPokemon(
     @PrimaryKey val id: String = UUID.randomUUID().toString(),
     val url: String,
     val name: String,
-    //By default the pokemon isn't favourite
-    val isFavorite: Boolean = false
 )

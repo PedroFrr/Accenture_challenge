@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.accenturechallenge.data.Result
-import com.example.accenturechallenge.data.database.entities.DbPokemon
 import com.example.accenturechallenge.data.database.entities.DbPokemonWithAbilitiesAndTypes
+import com.example.accenturechallenge.data.database.entities.DbPokemonWithOrWithoutFavorites
 import com.example.accenturechallenge.data.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
@@ -25,8 +25,8 @@ class PokemonDetailViewModel @Inject constructor(
     private val _pokemonDetail = MutableLiveData<Result<DbPokemonWithAbilitiesAndTypes>>()
     fun getPokemonDetail(): LiveData<Result<DbPokemonWithAbilitiesAndTypes>> = _pokemonDetail
 
-    private val _dbPokemon = MutableLiveData<DbPokemon>()
-    fun getDbPokemon(): LiveData<DbPokemon> = _dbPokemon
+    private val _pokemonWithOrWithoutFavorites = MutableLiveData<DbPokemonWithOrWithoutFavorites>()
+    fun getDbPokemon(): LiveData<DbPokemonWithOrWithoutFavorites> = _pokemonWithOrWithoutFavorites
 
     //TODO working solution
 //    fun fetchPokemonDetail(pokemonId: String){
@@ -52,7 +52,7 @@ class PokemonDetailViewModel @Inject constructor(
         viewModelScope.launch {
             repository.getDbPokemonDetail(pokemonId)
                 .collect{
-                    _dbPokemon.value = it
+                    _pokemonWithOrWithoutFavorites.value = it
                 }
 
         }
@@ -60,7 +60,7 @@ class PokemonDetailViewModel @Inject constructor(
 
     fun favoritePokemon(){
         viewModelScope.launch {
-            _dbPokemon.value?.let { repository.favoritePokemon(it) }
+            _pokemonWithOrWithoutFavorites.value?.let { repository.favoritePokemon(it) }
         }
     }
 
