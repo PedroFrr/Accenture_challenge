@@ -1,5 +1,6 @@
 package com.example.accenturechallenge.ui.pokemons.list
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import com.example.accenturechallenge.R
 import com.example.accenturechallenge.data.database.entities.DbPokemonWithOrWithoutFavorites
 import com.example.accenturechallenge.databinding.FragmentPokemonListBinding
 import com.example.accenturechallenge.utils.gone
+import com.example.accenturechallenge.utils.toast
 import com.example.accenturechallenge.utils.visible
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
@@ -62,46 +64,52 @@ class PokemonListFragment : Fragment() {
         //In portrait mode -> 1 column; in landscape -> 2 columns
         val gridColumnCount = resources.getInteger(R.integer.grid_column_count)
         _binding?.pokemonRecyclerView?.apply {
-            layoutManager = GridLayoutManager(requireContext(), gridColumnCount)
-            adapter = pokemonListAdapter.withLoadStateHeaderAndFooter(
-                header = PokemonsLoadStateAdapter { pokemonListAdapter.retry() },
+            val layout = GridLayoutManager(requireContext(), gridColumnCount)
+            layoutManager = layout
+            //If orientation is landscape the header has to span on two rows otherwise it just spans on the size of gridColumnCount 
+            layout.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    val currentOrientation = resources.configuration.orientation
+                    if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE){
+                        return if (pokemonListAdapter.getItemViewType(position) == R.layout.separator_pokemon_view_item)  2 else 1
+                    }
+                    return gridColumnCount
+                }
+            }
+            adapter = pokemonListAdapter.withLoadStateFooter(
                 footer = PokemonsLoadStateAdapter { pokemonListAdapter.retry() })
             hasFixedSize()
         }
 
+
+
+
         pokemonListAdapter.addLoadStateListener { loadState ->
 
-//            //TODO revisit some ticks on app
-//            if (loadState.source.refresh is LoadState.Loading) {
-//                _binding?.progressBar?.visible()
-//            } else {
-//                _binding?.progressBar?.gone()
-//
-//            }
+            if (loadState.refresh is LoadState.Loading) {
 
-            // Show the retry state if initial load or refresh fails.
-            when(loadState.refresh){
-                is LoadState.Error -> {
-                    _binding?.retryButton?.visible()
-                    _binding?.pokemonRecyclerView?.gone()
-                    _binding?.progressBar?.gone()
-                }
-                is LoadState.Loading -> {
-                    _binding?.retryButton?.gone()
-                    _binding?.pokemonRecyclerView?.gone()
-                    _binding?.progressBar?.visible()
-                }
-                is LoadState.NotLoading -> {
-                    _binding?.retryButton?.gone()
-                    _binding?.pokemonRecyclerView?.visible()
-                    _binding?.progressBar?.gone()
-                }
+                _binding?.retryButton?.gone()
+
+                // Show ProgressBar
+                _binding?.progressBar?.visible()
             }
+            else {
+                // Hide ProgressBar
+                _binding?.progressBar?.gone()
 
-
-
+                // If we have an error, show a toast
+                val errorState = when {
+                    loadState.append is LoadState.Error -> loadState.append as LoadState.Error
+                    loadState.prepend is LoadState.Error -> loadState.prepend as LoadState.Error
+                    loadState.refresh is LoadState.Error -> {
+                        _binding?.retryButton?.visible()
+                        loadState.refresh as LoadState.Error
+                    }
+                    else -> null
+                }
+                errorState?.error?.message?.let { toast(it)}
+            }
         }
-
 
     }
 
@@ -111,19 +119,6 @@ class PokemonListFragment : Fragment() {
             pokemonListViewModel.fetchPokemons()
                 .collectLatest { pagingData ->
                     pokemonListAdapter.submitData(pagingData)
-                }
-        }
-
-        lifecycleScope.launch {
-            pokemonListAdapter.loadStateFlow
-                // Only emit when REFRESH LoadState for RemoteMediator changes.
-                .distinctUntilChangedBy { it.refresh }
-                // Only react to cases where Remote REFRESH completes i.e., NotLoading.
-                .filter {it.refresh is LoadState.NotLoading }
-                .collectLatest {
-                    _binding?.pokemonRecyclerView?.visible()
-                    _binding?.progressBar?.gone()
-                    _binding?.pokemonRecyclerView?.scrollToPosition(0)
                 }
         }
 

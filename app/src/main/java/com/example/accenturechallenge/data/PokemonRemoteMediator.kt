@@ -19,7 +19,6 @@ import java.io.InvalidObjectException
 //TODO remove query parameter if not used
 @ExperimentalPagingApi
 class PokemonRemoteMediator(
-    private val query: String,
     private val pokemonClient: PokemonClient,
     private val database: AppDatabase,
     private val apiMapper: ApiMapper

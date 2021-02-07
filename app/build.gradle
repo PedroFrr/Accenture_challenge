@@ -99,9 +99,6 @@ dependencies {
     //Glide
     implementation "com.github.bumptech.glide:glide:$rootProject.glideVersion"
 
-    //Leak canary
-    debugImplementation "com.squareup.leakcanary:leakcanary-android:$rootProject.leakCanaryVersion"
-
     //Paging library
     implementation "androidx.paging:paging-runtime-ktx:$rootProject.pagingLibraryVersion"
 

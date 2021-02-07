@@ -50,7 +50,7 @@ interface PokemonDao {
      */
     @Transaction
     @Query("SELECT * FROM pokemon")
-    fun getPokemonWithFavorites(): PagingSource<Int, DbPokemonWithOrWithoutFavorites>
+    fun getPokemonsWithOrWithoutFavorites(): PagingSource<Int, DbPokemonWithOrWithoutFavorites>
 
     /**
      * Many to Many queries and relationships

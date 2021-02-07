@@ -6,17 +6,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.pokemons.list.PokemonListFragment">
 
-    <Button
-        android:id="@+id/retry_button"
-        android:layout_width="@dimen/dimen_0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/padding_standard"
-        android:text="@string/retry"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/pokemonRecyclerView" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/pokemonRecyclerView"
         android:layout_width="@dimen/dimen_0dp"
@@ -24,11 +13,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/retry_button"
-        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
         tools:itemCount="10"
-        tools:listitem="@layout/list_item_pokemon"
-        tools:visibility="visible"/>
+        tools:listitem="@layout/list_item_pokemon" />
 
     <ProgressBar
         android:id="@+id/progress_bar"
@@ -39,6 +26,18 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+    <Button
+        android:id="@+id/retry_button"
+        android:layout_width="@dimen/dimen_0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_standard"
+        android:text="@string/retry"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBaseline_toBaselineOf="@id/progress_bar" />
+
 
 
 

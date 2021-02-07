@@ -1,5 +1,6 @@
 package com.example.accenturechallenge.data.repository
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -14,6 +15,7 @@ import com.example.accenturechallenge.data.network.webhook.WebhookService
 import com.example.accenturechallenge.data.network.webhook.request.FavoritePokemonRequest
 import com.example.accenturechallenge.utils.POKEMON_PAGE_SIZE
 import kotlinx.coroutines.flow.*
+import java.lang.Exception
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(
@@ -22,6 +24,10 @@ class RepositoryImpl @Inject constructor(
     private val apiMapper: ApiMapper,
     private val webhookService: WebhookService
 ) : Repository {
+
+    companion object{
+        const val TAG = "REPOSITORY"
+    }
 
     /**
      * RemoteMediator which keeps a local database cache in the case the user has no internet connection
@@ -32,16 +38,15 @@ class RepositoryImpl @Inject constructor(
         return Pager(
             config = PagingConfig(
                 pageSize = POKEMON_PAGE_SIZE,
-                enablePlaceholders = true
+                enablePlaceholders = false
             ),
             //TODO change query
             remoteMediator = PokemonRemoteMediator(
-                "",
                 pokemonClient,
                 database,
                 apiMapper
             ),
-            pagingSourceFactory = { database.pokemonDao().getPokemonWithFavorites() }
+            pagingSourceFactory = { database.pokemonDao().getPokemonsWithOrWithoutFavorites() }
 
         ).flow
 
@@ -51,7 +56,7 @@ class RepositoryImpl @Inject constructor(
     override fun fetchFavoritePokemons(): Flow<List<DbPokemonWithOrWithoutFavorites>> = database.pokemonDao().fetchFavoritePokemons().map { it.filter { item -> item.favorite != null } }
 
 
-    override suspend fun favoritePokemon(pokemonWithOrWithoutWithFavorite: DbPokemonWithOrWithoutFavorites) {
+    override suspend fun favoritePokemon(pokemonWithOrWithoutWithFavorite: DbPokemonWithOrWithoutFavorites){
 
        /*
        Favorites pokemon if it's not yet a Favorite
@@ -63,17 +68,21 @@ class RepositoryImpl @Inject constructor(
             database.pokemonDao().unfavoritePokemon(DbFavorite(pokemonWithOrWithoutWithFavorite.pokemon.id))
         }
 
-        /*
+        try{
+            /*
         Sends POST request to Webhook service
          */
-        val request = FavoritePokemonRequest(
-            id = pokemonWithOrWithoutWithFavorite.pokemon.id,
-            name = pokemonWithOrWithoutWithFavorite.pokemon.name,
-            timestamp = System.currentTimeMillis(),
-            wasFavorite = pokemonWithOrWithoutWithFavorite.favorite == null
-        )
-        webhookService.postFavorite(request)
+            val request = FavoritePokemonRequest(
+                id = pokemonWithOrWithoutWithFavorite.pokemon.id,
+                name = pokemonWithOrWithoutWithFavorite.pokemon.name,
+                timestamp = System.currentTimeMillis(),
+                wasFavorite = pokemonWithOrWithoutWithFavorite.favorite == null
+            )
+            webhookService.postFavorite(request)
 
+        }catch(error: Exception){
+            Log.e(TAG, error.toString())
+        }
 
     }
 

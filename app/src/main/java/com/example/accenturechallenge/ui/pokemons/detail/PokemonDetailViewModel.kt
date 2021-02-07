@@ -29,16 +29,6 @@ class PokemonDetailViewModel @Inject constructor(
     private val _pokemonWithOrWithoutFavorites = MutableLiveData<DbPokemonWithOrWithoutFavorites>()
     fun getDbPokemon(): LiveData<DbPokemonWithOrWithoutFavorites> = _pokemonWithOrWithoutFavorites
 
-    //TODO working solution
-//    fun fetchPokemonDetail(pokemonId: String){
-//        viewModelScope.launch {
-//            repository.fetchPokemonDetail(pokemonId)
-//                .collect {
-//                    _pokemonDetail.postValue(it)
-//                }
-//        }
-//    }
-
         fun fetchPokemonDetail(pokemonId: String){
         viewModelScope.launch {
             repository.fetchPokemonDetailWithAbilitiesAndTypes(pokemonId)
