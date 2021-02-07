@@ -1,27 +1,27 @@
 package com.example.accenturechallenge.di
 
 import android.content.Context
+import androidx.room.Room
 import com.example.accenturechallenge.data.database.AppDatabase
-import com.example.accenturechallenge.data.database.dao.PokemonDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import javax.inject.Named
 
 /**
- * Provides database dependencies
+ * Provides an in memory database for testing
+ * No need to setup it up on each test
  */
 @Module
 @InstallIn(SingletonComponent::class)
-class DatabaseModel {
-
-    @Singleton
-    @Provides
-    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase = AppDatabase.getInstance(context)
+object TestAppModule {
 
     @Provides
-    fun providePokemonDao(appDatabase: AppDatabase): PokemonDao = appDatabase.pokemonDao()
-
+    @Named("test_db")
+    fun provideInMemoryDb(@ApplicationContext context: Context) =
+        Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
+            .allowMainThreadQueries()
+            .build()
 }

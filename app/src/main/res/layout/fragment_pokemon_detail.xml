@@ -143,8 +143,8 @@
 
                     <ImageView
                         android:id="@+id/isFavouriteDetail"
-                        android:layout_width="@dimen/favorite_size"
-                        android:layout_height="@dimen/favorite_size"
+                        android:layout_width="@dimen/favorite_card_size"
+                        android:layout_height="@dimen/favorite_card_size"
                         android:contentDescription="@string/favorite_pokemon_content_description"
                         android:padding="@dimen/padding_standard"
                         app:layout_constraintEnd_toEndOf="parent"

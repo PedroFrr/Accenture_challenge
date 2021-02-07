@@ -5,30 +5,35 @@ import androidx.room.*
 import com.example.accenturechallenge.data.database.entities.*
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Data Access Object for operations on Pokemons
+ */
 @Dao
 interface PokemonDao {
 
-    //OnConflicted is set to IGNORE as to not replace pokemons already downloaded (and possibly favorited by the user)
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllPokemons(pokemons: List<DbPokemon>)
-
-    @Query("SELECT * FROM pokemon")
-    fun fetchAllPokemons(): PagingSource<Int, DbPokemon>
 
     @Query("DELETE FROM pokemon")
     suspend fun clearAllPokemons()
 
-    @Query("UPDATE pokemon SET isFavorite =  NOT isFavorite WHERE id = :pokemonId")
-    suspend fun favoritePokemon(pokemonId: String)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun favoritePokemon(pokemonFavorite: DbFavorite)
 
-    @Query("SELECT * FROM pokemon WHERE isFavorite = 1")
-    fun fetchFavoritePokemons(): Flow<List<DbPokemon>>
+    @Delete
+    suspend fun unfavoritePokemon(pokemonFavorite: DbFavorite)
+
+    @Query("SELECT * FROM pokemon ")
+    fun fetchFavoritePokemons(): Flow<List<DbPokemonWithOrWithoutFavorites>>
 
     @Query("SELECT * FROM pokemon WHERE id = :pokemonId LIMIT 1")
-    fun fetchPokemonDetail(pokemonId: String): Flow<DbPokemon>
+    fun fetchPokemonDetail(pokemonId: String): Flow<DbPokemonWithOrWithoutFavorites>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPokemonDetail(pokemonDetail: DbPokemonDetail)
+
+    @Query("SELECT * FROM pokemon")
+    suspend fun observeAllPokemons(): List<DbPokemon>
 
 
     /**
@@ -41,6 +46,13 @@ interface PokemonDao {
     suspend fun insertAllTypesRef(abilities: List<DbPokemonType>)
 
     /**
+     * One to One queries and relationships
+     */
+    @Transaction
+    @Query("SELECT * FROM pokemon")
+    fun getPokemonsWithOrWithoutFavorites(): PagingSource<Int, DbPokemonWithOrWithoutFavorites>
+
+    /**
      * Many to Many queries and relationships
      */
 
@@ -50,6 +62,7 @@ interface PokemonDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPokemonWithTypes(pokemonTypeCrossRef: List<DbPokemonTypeCrossRef>)
 
+    @Transaction
     @Query("SELECT * FROM pokemon_detail WHERE pokemonDetailId = :pokemonId")
     suspend fun getPokemonWithAbilitiesAndTypes(pokemonId: String): DbPokemonWithAbilitiesAndTypes?
 

@@ -4,7 +4,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.*
 
-//TODO for now I'm separating into another entity. Probably can pout it all on DbPokemon
+/**
+ * Database entity which contains the detail for a given Pokemon
+ */
 @Entity(tableName = "pokemon_detail")
 data class DbPokemonDetail(
     @PrimaryKey val pokemonDetailId: String = UUID.randomUUID().toString(),

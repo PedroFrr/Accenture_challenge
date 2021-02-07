@@ -24,4 +24,5 @@
     <color name="darkBrown">#4e342e</color>
     <color name="darkBlack">#000000</color>
     <color name="ic_launcher_background">#000000</color>
+    <color name="separatorBackground"> @color/colorPrimaryVariant </color>
 </resources>

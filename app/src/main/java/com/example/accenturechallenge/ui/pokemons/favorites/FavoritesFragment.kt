@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.example.accenturechallenge.data.database.entities.DbPokemon
+import androidx.recyclerview.widget.GridLayoutManager
+import com.example.accenturechallenge.R
+import com.example.accenturechallenge.data.database.entities.DbPokemonWithOrWithoutFavorites
 import com.example.accenturechallenge.databinding.FragmentFavoritesBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -44,7 +46,9 @@ class FavoritesFragment : Fragment() {
     }
 
     private fun initAdapter() {
+        val gridColumnCount = resources.getInteger(R.integer.grid_column_count)
         _binding?.pokemonRecyclerView?.apply {
+            layoutManager = GridLayoutManager(requireContext(), gridColumnCount)
             adapter = pokemonListAdapter
             hasFixedSize()
         }
@@ -59,8 +63,8 @@ class FavoritesFragment : Fragment() {
         }
     }
 
-    private fun onFavoritePokemon(pokemon: DbPokemon){
-        favoritesViewModel.favoritePokemon(pokemon)
+    private fun onFavoritePokemon(pokemonWithFavorites: DbPokemonWithOrWithoutFavorites){
+        favoritesViewModel.favoritePokemon(pokemonWithFavorites)
     }
 
     override fun onDestroyView() {

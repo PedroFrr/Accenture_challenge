@@ -4,6 +4,9 @@ import com.example.accenturechallenge.data.network.webhook.request.FavoritePokem
 import retrofit2.http.Body
 import retrofit2.http.POST
 
+/**
+ * Webhook.site communication setup via Retrofit.
+ */
 interface WebhookService {
 
     //TODO check if it returns something or not
