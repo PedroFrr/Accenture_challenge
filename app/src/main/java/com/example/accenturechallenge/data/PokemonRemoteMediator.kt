@@ -16,7 +16,10 @@ import retrofit2.HttpException
 import java.io.IOException
 import java.io.InvalidObjectException
 
-//TODO remove query parameter if not used
+/**
+ * RemoteMediator class works to remove network dependencies when paginating from API
+ * Used with Paging 3.0
+ */
 @ExperimentalPagingApi
 class PokemonRemoteMediator(
     private val pokemonClient: PokemonClient,

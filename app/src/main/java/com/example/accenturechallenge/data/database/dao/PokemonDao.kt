@@ -5,14 +5,14 @@ import androidx.room.*
 import com.example.accenturechallenge.data.database.entities.*
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Data Access Object for operations on Pokemons
+ */
 @Dao
 interface PokemonDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllPokemons(pokemons: List<DbPokemon>)
-
-    @Query("SELECT * FROM pokemon")
-    fun fetchAllPokemons(): PagingSource<Int, DbPokemon>
 
     @Query("DELETE FROM pokemon")
     suspend fun clearAllPokemons()

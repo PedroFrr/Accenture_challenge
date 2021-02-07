@@ -4,6 +4,10 @@ import com.example.accenturechallenge.data.Failure
 import com.example.accenturechallenge.data.Success
 import javax.inject.Inject
 
+/**
+ * Wrapper around PokemonApi calls
+ * Used to handle results from the API
+ */
 class PokemonClient @Inject constructor(
     private val pokemonService: PokemonService
 ) {

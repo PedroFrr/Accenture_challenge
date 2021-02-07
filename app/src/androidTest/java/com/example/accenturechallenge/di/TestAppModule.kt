@@ -10,6 +10,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Named
 
+/**
+ * Provides an in memory database for testing
+ * No need to setup it up on each test
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object TestAppModule {

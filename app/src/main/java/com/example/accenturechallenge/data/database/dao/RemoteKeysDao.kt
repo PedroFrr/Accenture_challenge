@@ -6,6 +6,10 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.accenturechallenge.data.database.entities.DbRemoteKeys
 
+/**
+ * When we get the last item loaded from the PagingState we don't know the last ID of the retrieved Pokemon
+ * This DAO serves as a workaround to retrieve the previous and next remote keys we need to fetch
+ */
 @Dao
 interface RemoteKeysDao {
 

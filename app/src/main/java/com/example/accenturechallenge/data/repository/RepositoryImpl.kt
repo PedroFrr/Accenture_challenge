@@ -11,21 +11,24 @@ import com.example.accenturechallenge.data.database.entities.*
 import com.example.accenturechallenge.data.network.pokemonapi.PokemonClient
 import com.example.accenturechallenge.data.network.pokemonapi.mapper.ApiMapper
 import com.example.accenturechallenge.data.network.pokemonapi.response.GetResourceResponse
-import com.example.accenturechallenge.data.network.webhook.WebhookService
+import com.example.accenturechallenge.data.network.webhook.WebhookClient
 import com.example.accenturechallenge.data.network.webhook.request.FavoritePokemonRequest
 import com.example.accenturechallenge.utils.POKEMON_PAGE_SIZE
-import kotlinx.coroutines.flow.*
-import java.lang.Exception
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(
     private val pokemonClient: PokemonClient,
     private val database: AppDatabase,
     private val apiMapper: ApiMapper,
-    private val webhookService: WebhookService
+    private val webhookClient: WebhookClient
 ) : Repository {
 
-    companion object{
+    companion object {
         const val TAG = "REPOSITORY"
     }
 
@@ -53,34 +56,42 @@ class RepositoryImpl @Inject constructor(
 
     }
 
-    override fun fetchFavoritePokemons(): Flow<List<DbPokemonWithOrWithoutFavorites>> = database.pokemonDao().fetchFavoritePokemons().map { it.filter { item -> item.favorite != null } }
+    override fun fetchFavoritePokemons(): Flow<List<DbPokemonWithOrWithoutFavorites>> =
+        database.pokemonDao().fetchFavoritePokemons()
+            .map { it.filter { item -> item.favorite != null } }
 
 
-    override suspend fun favoritePokemon(pokemonWithOrWithoutWithFavorite: DbPokemonWithOrWithoutFavorites){
+    override suspend fun favoritePokemon(pokemonWithOrWithoutWithFavorite: DbPokemonWithOrWithoutFavorites) {
 
-       /*
-       Favorites pokemon if it's not yet a Favorite
-       Unfavorites it otherwise
-        */
-        if(pokemonWithOrWithoutWithFavorite.favorite == null){
-            database.pokemonDao().favoritePokemon(DbFavorite(pokemonWithOrWithoutWithFavorite.pokemon.id))
-        }else{
-            database.pokemonDao().unfavoritePokemon(DbFavorite(pokemonWithOrWithoutWithFavorite.pokemon.id))
+        /*
+        Favorites pokemon if it's not yet a Favorite
+        Unfavorites it otherwise
+         */
+        if (pokemonWithOrWithoutWithFavorite.favorite == null) {
+            database.pokemonDao()
+                .favoritePokemon(DbFavorite(pokemonWithOrWithoutWithFavorite.pokemon.id))
+        } else {
+            database.pokemonDao()
+                .unfavoritePokemon(DbFavorite(pokemonWithOrWithoutWithFavorite.pokemon.id))
         }
 
-        try{
-            /*
-        Sends POST request to Webhook service
-         */
-            val request = FavoritePokemonRequest(
-                id = pokemonWithOrWithoutWithFavorite.pokemon.id,
-                name = pokemonWithOrWithoutWithFavorite.pokemon.name,
-                timestamp = System.currentTimeMillis(),
-                wasFavorite = pokemonWithOrWithoutWithFavorite.favorite == null
-            )
-            webhookService.postFavorite(request)
+        try {
+            withContext(Dispatchers.IO) {
+                val request = FavoritePokemonRequest(
+                    id = pokemonWithOrWithoutWithFavorite.pokemon.id,
+                    name = pokemonWithOrWithoutWithFavorite.pokemon.name,
+                    timestamp = System.currentTimeMillis(),
+                    wasFavorite = pokemonWithOrWithoutWithFavorite.favorite == null
+                )
 
-        }catch(error: Exception){
+                /*
+                Sends POST request to Webhook service
+                 */
+                webhookClient.postFavorite(request)
+            }
+
+
+        } catch (error: Exception) {
             Log.e(TAG, error.toString())
         }
 
@@ -94,10 +105,11 @@ class RepositoryImpl @Inject constructor(
             //If couldn't retrieve from network, return from DB
             //If Db is empty, return Failure to UI layer
             if (result is Failure) {
-                val pokemonWithAbilitiesAndTypes = database.pokemonDao().getPokemonWithAbilitiesAndTypes(pokemonId)
-                if(pokemonWithAbilitiesAndTypes != null){
+                val pokemonWithAbilitiesAndTypes =
+                    database.pokemonDao().getPokemonWithAbilitiesAndTypes(pokemonId)
+                if (pokemonWithAbilitiesAndTypes != null) {
                     emit(Success(pokemonWithAbilitiesAndTypes))
-                }else{
+                } else {
                     emit(Failure(result.error))
                 }
             } else {
@@ -111,17 +123,21 @@ class RepositoryImpl @Inject constructor(
 
                 val pokemonAbilitiesCrossRef = pokemonResult.data.abilities
                     .map { apiMapper.mapApiAbilityToPokemonAbility(it) }
-                    .map { DbPokemonAbilityCrossRef(
-                        pokemonDetailId = pokemonId,
-                        abilityId = it.abilityId,
-                    ) }
+                    .map {
+                        DbPokemonAbilityCrossRef(
+                            pokemonDetailId = pokemonId,
+                            abilityId = it.abilityId,
+                        )
+                    }
 
                 val pokemonTypesCrossRef = pokemonResult.data.types
                     .map { apiMapper.mapApiTypeToPokemonType(it) }
-                    .map { DbPokemonTypeCrossRef(
-                        pokemonDetailId = pokemonId,
-                        typeId = it.typeId,
-                    ) }
+                    .map {
+                        DbPokemonTypeCrossRef(
+                            pokemonDetailId = pokemonId,
+                            typeId = it.typeId,
+                        )
+                    }
 
 
                 //Update cache (offline first) with Pokemon Detail and respective abilities
@@ -130,10 +146,11 @@ class RepositoryImpl @Inject constructor(
                 database.pokemonDao().insertPokemonWithTypes(pokemonTypesCrossRef)
                 database.pokemonDao().insertPokemonDetail(pokemonDetail)
 
-                val pokemonWithAbilitiesAndTypes = database.pokemonDao().getPokemonWithAbilitiesAndTypes(pokemonId)
-                if(pokemonWithAbilitiesAndTypes != null){
+                val pokemonWithAbilitiesAndTypes =
+                    database.pokemonDao().getPokemonWithAbilitiesAndTypes(pokemonId)
+                if (pokemonWithAbilitiesAndTypes != null) {
                     emit(Success(pokemonWithAbilitiesAndTypes))
-                }else{
+                } else {
                     emit(Failure(NullPointerException("No data")))
                 }
 
@@ -141,10 +158,13 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getDbPokemonDetail(pokemonId: String): Flow<DbPokemonWithOrWithoutFavorites> = database.pokemonDao().fetchPokemonDetail(pokemonId)
+    override fun getDbPokemonDetail(pokemonId: String): Flow<DbPokemonWithOrWithoutFavorites> =
+        database.pokemonDao().fetchPokemonDetail(pokemonId)
 
-    override suspend fun fetchPokemonAbilities(): Result<GetResourceResponse> = pokemonClient.fetchPokemonAbilities()
+    override suspend fun fetchPokemonAbilities(): Result<GetResourceResponse> =
+        pokemonClient.fetchPokemonAbilities()
 
-    override suspend fun fetchPokemonTypes(): Result<GetResourceResponse> = pokemonClient.fetchPokemonTypes()
+    override suspend fun fetchPokemonTypes(): Result<GetResourceResponse> =
+        pokemonClient.fetchPokemonTypes()
 
 }

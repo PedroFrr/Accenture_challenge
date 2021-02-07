@@ -10,7 +10,6 @@ data class GetPokemonItemResult(
     @Json(name = "base_experience") val baseExperience: Int,
     @Json(name = "height") val height: Int,
     @Json(name = "id") val id: Int,
-    @Json(name = "moves") val moves: List<Move>,
     @Json(name = "name") val name: String,
     @Json(name = "stats") val stats: List<Stat>,
     @Json(name = "types") val types: List<Type>,

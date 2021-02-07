@@ -5,7 +5,6 @@ import androidx.test.filters.SmallTest
 import com.example.accenturechallenge.data.database.AppDatabase
 import com.example.accenturechallenge.data.database.dao.PokemonDao
 import com.example.accenturechallenge.data.database.entities.DbPokemon
-import com.example.accenturechallenge.data.database.entities.DbPokemonDetail
 import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -19,7 +18,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 @SmallTest
-@HiltAndroidTest //Specify for Hilt that we want to inject dependencies into this Test class
+@HiltAndroidTest //Tells Hilt that we want to inject dependencies into this Test class
 class PokemonDaoTest {
 
     @get:Rule

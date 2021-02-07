@@ -9,7 +9,9 @@ import com.example.accenturechallenge.data.network.pokemonapi.response.GetPokemo
 import com.example.accenturechallenge.data.network.pokemonapi.response.ResourceResult
 import com.example.accenturechallenge.data.network.pokemonapi.response.Type
 
-
+/**
+ * Responsible from mapping the API results into model entities
+ */
 interface ApiMapper {
 
     fun mapApiPokemonToModel(apiResource: ResourceResult): DbPokemon

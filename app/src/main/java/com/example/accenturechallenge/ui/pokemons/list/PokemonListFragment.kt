@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -18,8 +17,7 @@ import com.example.accenturechallenge.utils.gone
 import com.example.accenturechallenge.utils.toast
 import com.example.accenturechallenge.utils.visible
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /** [Fragment] class to represent cat breed list.
@@ -66,7 +64,7 @@ class PokemonListFragment : Fragment() {
         _binding?.pokemonRecyclerView?.apply {
             val layout = GridLayoutManager(requireContext(), gridColumnCount)
             layoutManager = layout
-            //If orientation is landscape the header has to span on two rows otherwise it just spans on the size of gridColumnCount 
+            //If orientation is landscape the header has to span on two rows otherwise it just spans on the size of gridColumnCount
             layout.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
                     val currentOrientation = resources.configuration.orientation

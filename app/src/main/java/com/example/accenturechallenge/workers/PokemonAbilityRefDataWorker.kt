@@ -12,6 +12,10 @@ import com.example.accenturechallenge.data.repository.Repository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
+/**
+ * Saves the Pokemon Abilities on the Db on Database creation
+ * [HiltWorker] allows for dependency injection on Workers
+ */
 @HiltWorker
 class PokemonAbilityRefDataWorker @AssistedInject constructor(
     @Assisted appContext: Context,
